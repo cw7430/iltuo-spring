@@ -1,0 +1,15 @@
+spring:
+  application:
+    name: iltuo
+  config:
+    import: classpath:application-secret.yml
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        use_sql_comments: true
+  jackson:
+    time-zone: Asia/Seoul
+server:
+  port: 8081
