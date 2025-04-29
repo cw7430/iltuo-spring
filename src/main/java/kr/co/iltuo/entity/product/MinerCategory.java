@@ -6,23 +6,23 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "miner_category")
+@Table(name = "`miner_category`")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class MinerCategory {
 
     @Id
-    @Column(name = "miner_category_id", nullable = false)
+    @Column(name = "`miner_category_id`", nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long minerCategoryId;
 
-    @Column(name = "major_category_id", nullable = false)
+    @Column(name = "`major_category_id`", nullable = false)
     private Long majorCategoryId;
 
-    @Column(name = "miner_category_name", nullable = false, length = 45)
+    @Column(name = "`miner_category_name`", nullable = false, length = 45)
     private String minerCategoryName;
 
-    @Column(name = "is_valid", nullable = false)
-    private boolean isValid;
+    @Column(name = "`is_valid`", nullable = false)
+    private boolean isValid = true;
 }
