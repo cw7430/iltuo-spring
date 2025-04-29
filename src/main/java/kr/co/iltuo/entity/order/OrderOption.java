@@ -1,29 +1,28 @@
-package kr.co.iltuo.entity.product;
+package kr.co.iltuo.entity.order;
 
 import jakarta.persistence.*;
 import lombok.*;
 
-
 @Entity
-@Table(name = "`option_detail`")
+@Table(name = "`order_option`")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class OptionDetail {
+public class OrderOption {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "`option_detail_id`", nullable = false)
-    private Long optionDetailId;
+    @Column(name = "`order_option_id`", nullable = false)
+    private Long orderOptionId;
 
-    @Column(name = "`option_id`", nullable = false)
-    private Long optionId;
+    @Column(name = "`order_id`", nullable = false)
+    private Long orderId;
+
+    @Column(name = "`option_name`", nullable = false, length = 45)
+    private String optionName;
 
     @Column(name = "`option_detail_name`", nullable = false, length = 45)
     private String optionDetailName;
 
     @Column(name = "`option_fluctuating_price`", nullable = false)
     private int optionFluctuatingPrice;
-
-    @Column(name = "`is_valid`", nullable = false)
-    private boolean isValid = true;
 }

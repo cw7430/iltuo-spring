@@ -2,20 +2,22 @@ package kr.co.iltuo.entity.product;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.Immutable;
 
 import java.time.*;
 
 @Entity
-@Table(name = "`product`")
-@Data
+@Table(name = "`product_view`")
+@Getter
 @NoArgsConstructor
-@AllArgsConstructor
-public class Product {
-
+@Immutable
+public class ProductView {
     @Id
     @Column(name = "`product_id`", nullable = false)
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long productId;
+
+    @Column(name = "`major_category_id`", nullable = false)
+    private Long majorCategoryId;
 
     @Column(name = "`miner_category_id`", nullable = false)
     private Long minerCategoryId;
@@ -42,5 +44,6 @@ public class Product {
     private LocalDateTime registerDate;
 
     @Column(name = "`is_valid`", nullable = false)
-    private boolean isValid = true;
+    private boolean isValid;
+
 }

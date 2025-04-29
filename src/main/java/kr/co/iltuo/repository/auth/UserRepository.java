@@ -1,0 +1,8 @@
+package kr.co.iltuo.repository.auth;
+
+import kr.co.iltuo.entity.auth.User;
+import org.springframework.data.jpa.repository.*;
+
+public interface UserRepository extends JpaRepository<User,Long> {
+
+}

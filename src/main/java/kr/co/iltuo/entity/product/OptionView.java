@@ -2,21 +2,29 @@ package kr.co.iltuo.entity.product;
 
 import jakarta.persistence.*;
 import lombok.*;
-
+import org.hibernate.annotations.Immutable;
 
 @Entity
-@Table(name = "`option_detail`")
-@Data
+@Table(name = "`option_view`")
+@Getter
 @NoArgsConstructor
-@AllArgsConstructor
-public class OptionDetail {
+@Immutable
+public class OptionView {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "`option_detail_id`", nullable = false)
     private Long optionDetailId;
 
     @Column(name = "`option_id`", nullable = false)
     private Long optionId;
+
+    @Column(name = "`priority_index`", nullable = false)
+    private Long priorityIndex;
+
+    @Column(name = "`major_category_id`", nullable = false)
+    private Long majorCategoryId;
+
+    @Column(name = "`option_type_code`", nullable = false, length = 6)
+    private String optionTypeCode;
 
     @Column(name = "`option_detail_name`", nullable = false, length = 45)
     private String optionDetailName;
@@ -25,5 +33,5 @@ public class OptionDetail {
     private int optionFluctuatingPrice;
 
     @Column(name = "`is_valid`", nullable = false)
-    private boolean isValid = true;
+    private boolean isValid;
 }
