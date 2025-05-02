@@ -4,6 +4,7 @@ spring:
   config:
     import: classpath:application-secret.yml
   jpa:
+    open-in-view: false
     show-sql: true
     properties:
       hibernate:

@@ -5,4 +5,5 @@ import org.springframework.data.jpa.repository.*;
 
 public interface UserRepository extends JpaRepository<User,Long> {
     User findByUserId(String userId);
+    int countByUserId(String userId);
 }

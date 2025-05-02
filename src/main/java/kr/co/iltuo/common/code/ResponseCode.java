@@ -16,6 +16,7 @@ public enum ResponseCode {
 
     // 401 Unauthorized
     UNAUTHORIZED("UA", "로그인이 필요합니다.", HttpStatus.UNAUTHORIZED),
+    LOGIN_ERROR("LGE", "아이디 또는 비밀번호가 잘못되었습니다.", HttpStatus.UNAUTHORIZED),
 
     // 403 Forbidden
     FORBIDDEN("FB", "접근 권한이 없습니다.", HttpStatus.FORBIDDEN),

@@ -1,7 +1,9 @@
 package kr.co.iltuo.common.exception;
 
 import kr.co.iltuo.common.code.ResponseCode;
-import kr.co.iltuo.common.response.ApiResponse;
+import kr.co.iltuo.dto.response.ResponseDto;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
+import org.springframework.dao.DataAccessException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
@@ -11,27 +13,45 @@ public class GlobalExceptionHandler {
 
     // 유효성 검증 실패
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ApiResponse<Void>> handleValidationException(MethodArgumentNotValidException ex) {
+    public ResponseEntity<ResponseDto<Void>> handleValidationException(MethodArgumentNotValidException ex) {
+        String errorMessage = ex.getBindingResult()
+                .getFieldErrors()
+                .stream()
+                .findFirst()
+                .map(DefaultMessageSourceResolvable::getDefaultMessage)
+                .orElse(ResponseCode.VALIDATION_ERROR.getMessage());
+
         return new ResponseEntity<>(
-                ApiResponse.fail(ResponseCode.VALIDATION_ERROR),
+                new ResponseDto<>(
+                        ResponseCode.VALIDATION_ERROR.getCode(),
+                        errorMessage,
+                        null
+                ),
                 ResponseCode.VALIDATION_ERROR.getStatus()
         );
     }
 
+
     // 커스텀 비즈니스 예외
     @ExceptionHandler(CustomException.class)
-    public ResponseEntity<ApiResponse<Void>> handleCustomException(CustomException ex) {
+    public ResponseEntity<ResponseDto<Void>> handleCustomException(CustomException ex) {
         return new ResponseEntity<>(
-                ApiResponse.fail(ex.getResponseCode()),
+                ResponseDto.fail(ex.getResponseCode()),
                 ex.getResponseCode().getStatus()
         );
     }
 
+    // 데이터베이스 오류
+    @ExceptionHandler(DataAccessException.class)
+    public ResponseEntity<ResponseDto<Void>> handleDatabaseException(DataAccessException ex) {
+        return new ResponseEntity<>(ResponseDto.fail(ResponseCode.DATABASE_ERROR), ResponseCode.DATABASE_ERROR.getStatus());
+    }
+
     // 기타 서버 오류
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ApiResponse<Void>> handleGeneralException(Exception ex) {
+    public ResponseEntity<ResponseDto<Void>> handleGeneralException(Exception ex) {
         return new ResponseEntity<>(
-                ApiResponse.fail(ResponseCode.INTERNAL_SERVER_ERROR),
+                ResponseDto.fail(ResponseCode.INTERNAL_SERVER_ERROR),
                 ResponseCode.INTERNAL_SERVER_ERROR.getStatus()
         );
     }
