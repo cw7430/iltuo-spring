@@ -47,6 +47,10 @@ public class AuthServiceImplement implements AuthService {
     @Transactional
     public SignInResponseDto signUp(SignUpRequestDto signUpRequestDto) {
         User user = new User();
+        int count = userRepository.countByUserId(signUpRequestDto.getUserId());
+        if (count != 0) {
+            throw new CustomException(ResponseCode.DUPLICATE_RESOURCE);
+        }
         Address address = new Address();
         user.setUserId(signUpRequestDto.getUserId());
         user.setPassword(passwordEncoder.encode(signUpRequestDto.getPassword()));
