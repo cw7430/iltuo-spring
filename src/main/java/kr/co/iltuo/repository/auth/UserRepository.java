@@ -9,6 +9,6 @@ public interface UserRepository extends JpaRepository<User,Long> {
     int countByUserId(String userId);
     @Query(value = "SELECT COUNT(*) FROM `user` WHERE `user_id` = :userId AND `is_valid` = true", nativeQuery = true)
     int countValidUserByUserId(@Param("userId") String userId);
-    @Query(value = "SELECT * FROM `user` WHERE `user_id` = 'cw7430' and `is_valid` = false", nativeQuery = true)
+    @Query(value = "SELECT * FROM `user` WHERE `user_id` = :userId and `is_valid` = false", nativeQuery = true)
     User findCanceledUserByUserId(@Param("userId") String userId);
 }

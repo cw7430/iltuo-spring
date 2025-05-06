@@ -6,7 +6,6 @@ import lombok.*;
 @Entity
 @Table(name = "`native_auth`")
 @Getter
-@Setter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
@@ -17,4 +16,8 @@ public class NativeAuth {
 
     @Column(name = "`password`", nullable = false, length = 65)
     private String password;
+
+    public void changePassword(String encodedPassword) {
+        this.password = encodedPassword;
+    }
 }

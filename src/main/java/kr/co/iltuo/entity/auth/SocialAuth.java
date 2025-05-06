@@ -6,7 +6,6 @@ import lombok.*;
 @Entity
 @Table(name = "`social_auth`")
 @Getter
-@Setter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor

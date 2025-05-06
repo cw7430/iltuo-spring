@@ -6,7 +6,6 @@ import lombok.*;
 @Entity
 @Table(name = "`address`")
 @Getter
-@Setter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
@@ -37,4 +36,12 @@ public class Address {
     @Builder.Default
     @Column(name = "`is_valid`", nullable = false)
     private boolean isValid = true;
+
+    public void updateAddress(String postalCode, String defaultAddress, String detailAddress, String extraAddress, boolean isMain) {
+        this.postalCode = postalCode;
+        this.defaultAddress = defaultAddress;
+        this.detailAddress = detailAddress;
+        this.extraAddress = extraAddress;
+        this.isMain = isMain;
+    }
 }

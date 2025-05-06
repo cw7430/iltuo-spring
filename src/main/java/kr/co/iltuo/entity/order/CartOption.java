@@ -6,7 +6,6 @@ import lombok.*;
 @Entity
 @Table(name = "`cart_option`")
 @Getter
-@Setter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor

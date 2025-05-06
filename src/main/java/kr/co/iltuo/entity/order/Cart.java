@@ -7,7 +7,6 @@ import java.time.*;
 @Entity
 @Table(name = "`cart`")
 @Getter
-@Setter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor

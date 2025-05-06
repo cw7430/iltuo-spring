@@ -8,7 +8,6 @@ import java.time.*;
 @Entity
 @Table(name = "`user`")
 @Getter
-@Setter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
@@ -44,4 +43,11 @@ public class User {
     @Builder.Default
     @Column(name = "`is_valid`", nullable = false)
     private boolean isValid = true;
+
+    public void updateInfo(String userName, String phoneNumber, String email, LocalDateTime registerDate) {
+        this.userName = userName;
+        this.phoneNumber = phoneNumber;
+        this.email = email;
+        this.registerDate = registerDate;
+    }
 }

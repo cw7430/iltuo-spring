@@ -8,7 +8,6 @@ import java.time.*;
 @Entity
 @Table(name = "`product`")
 @Getter
-@Setter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor

@@ -8,7 +8,6 @@ import java.time.*;
 @Entity
 @Table(name = "`payment`")
 @Getter
-@Setter
 @Builder(access = AccessLevel.PROTECTED)
 @NoArgsConstructor
 @AllArgsConstructor

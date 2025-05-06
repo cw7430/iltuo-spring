@@ -7,7 +7,6 @@ import lombok.*;
 @Entity
 @Table(name = "`option_detail`")
 @Getter
-@Setter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor

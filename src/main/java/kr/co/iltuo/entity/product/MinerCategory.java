@@ -6,7 +6,6 @@ import lombok.*;
 @Entity
 @Table(name = "`miner_category`")
 @Getter
-@Setter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
