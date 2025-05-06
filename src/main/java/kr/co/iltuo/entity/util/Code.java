@@ -5,8 +5,10 @@ import lombok.*;
 
 @Entity
 @Table(name = "`code`")
-@Data
-@NoArgsConstructor
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class Code {
 
@@ -24,6 +26,7 @@ public class Code {
     @Column(name = "`code_comment`", nullable = false, length = 100, unique = true)
     private String codeComment;
 
+    @Builder.Default
     @Column(name = "`is_valid`", nullable = false)
     private boolean isValid = true;
 }

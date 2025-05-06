@@ -5,8 +5,10 @@ import lombok.*;
 
 @Entity
 @Table(name = "`option`")
-@Data
-@NoArgsConstructor
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class Option {
 
@@ -27,6 +29,7 @@ public class Option {
     @Column(name = "`option_type_code`", nullable = false, length = 6)
     private String optionTypeCode;
 
+    @Builder.Default
     @Column(name = "`is_valid`", nullable = false)
     private boolean isValid = true;
 }

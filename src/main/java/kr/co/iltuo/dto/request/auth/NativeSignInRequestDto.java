@@ -5,7 +5,7 @@ import lombok.*;
 
 @Getter
 @NoArgsConstructor
-public class SignInRequestDto {
+public class NativeSignInRequestDto {
     @NotBlank(message = "아이디와 비밀번호를 입력해주세요.")
     private String userId;
     @NotBlank(message = "아이디와 비밀번호를 입력해주세요.")

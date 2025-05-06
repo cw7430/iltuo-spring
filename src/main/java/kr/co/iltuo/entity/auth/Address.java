@@ -5,8 +5,10 @@ import lombok.*;
 
 @Entity
 @Table(name = "`address`")
-@Data
-@NoArgsConstructor
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class Address {
     @Id
@@ -14,8 +16,8 @@ public class Address {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long addressId;
 
-    @Column(name = "`user_id`", nullable = false, length = 25)
-    private String userId;
+    @Column(name = "`user_idx`", nullable = false)
+    private Long userIdx;
 
     @Column(name = "`postal_code`", nullable = false, length = 7)
     private String postalCode;
@@ -32,6 +34,7 @@ public class Address {
     @Column(name = "`is_main`", nullable = false)
     private boolean isMain;
 
+    @Builder.Default
     @Column(name = "`is_valid`", nullable = false)
     private boolean isValid = true;
 }

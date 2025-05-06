@@ -1,14 +1,14 @@
 package kr.co.iltuo.entity.product;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Table(name = "`miner_category`")
-@Data
-@NoArgsConstructor
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class MinerCategory {
 
@@ -23,6 +23,7 @@ public class MinerCategory {
     @Column(name = "`miner_category_name`", nullable = false, length = 45)
     private String minerCategoryName;
 
+    @Builder.Default
     @Column(name = "`is_valid`", nullable = false)
     private boolean isValid = true;
 }

@@ -7,7 +7,7 @@ import org.hibernate.annotations.Immutable;
 @Entity
 @Table(name = "`cart_view`")
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Immutable
 public class CartView {
     @Id
@@ -20,8 +20,8 @@ public class CartView {
     @Column(name = "`product_name`", nullable = false, length = 100)
     private String productName;
 
-    @Column(name = "`user_id`", nullable = false, length = 25)
-    private String userId;
+    @Column(name = "`user_idx`", nullable = false)
+    private Long userIdx;
 
     @Column(name = "`price`", nullable = false)
     private long price;

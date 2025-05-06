@@ -2,25 +2,25 @@ package kr.co.iltuo.entity.auth;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.Immutable;
 
-import java.time.*;
+import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "`user`")
+@Table(name = "`native_user_view`")
 @Getter
-@Setter
-@Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
-public class User {
-
+@Immutable
+public class NativeUserView {
     @Id
     @Column(name = "`user_idx`", nullable = false)
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userIdx;
 
     @Column(name = "`user_id`", unique = true, nullable = false, length = 25)
     private String userId;
+
+    @Column(name = "`password`", nullable = false, length = 65)
+    private String password;
 
     @Column(name = "`user_name`", nullable = false, length = 100)
     private String userName;
@@ -34,14 +34,10 @@ public class User {
     @Column(name = "`register_date`", nullable = false)
     private LocalDateTime registerDate;
 
-    @Builder.Default
     @Column(name = "`user_permissions_code`", nullable = false, length = 6)
-    private String userPermissionsCode = "AR001";
+    private String userPermissionsCode;
 
     @Column(name = "`auth_method_code`", nullable = false, length = 6)
     private String authMethodCode;
 
-    @Builder.Default
-    @Column(name = "`is_valid`", nullable = false)
-    private boolean isValid = true;
 }

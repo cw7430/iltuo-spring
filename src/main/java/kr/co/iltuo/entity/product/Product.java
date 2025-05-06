@@ -7,8 +7,10 @@ import java.time.*;
 
 @Entity
 @Table(name = "`product`")
-@Data
-@NoArgsConstructor
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class Product {
 
@@ -41,6 +43,7 @@ public class Product {
     @Column(name = "`register_date`", nullable = false)
     private LocalDateTime registerDate;
 
+    @Builder.Default
     @Column(name = "`is_valid`", nullable = false)
     private boolean isValid = true;
 }

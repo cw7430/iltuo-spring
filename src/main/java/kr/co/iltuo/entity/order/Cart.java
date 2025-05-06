@@ -6,8 +6,10 @@ import java.time.*;
 
 @Entity
 @Table(name = "`cart`")
-@Data
-@NoArgsConstructor
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class Cart {
     @Id
@@ -18,8 +20,8 @@ public class Cart {
     @Column(name = "`product_id`", nullable = false)
     private Long productId;
 
-    @Column(name = "`user_id`", nullable = false, length = 25)
-    private String userId;
+    @Column(name = "`user_idx`", nullable = false)
+    private Long userIdx;
 
     @Column(name = "`quantity`", nullable = false)
     private int quantity;

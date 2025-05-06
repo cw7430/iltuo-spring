@@ -7,7 +7,9 @@ import java.time.*;
 
 @Entity
 @Table(name = "`payment`")
-@Data
+@Getter
+@Setter
+@Builder(access = AccessLevel.PROTECTED)
 @NoArgsConstructor
 @AllArgsConstructor
 public class Payment {
@@ -17,9 +19,10 @@ public class Payment {
     @Column(name = "`payment_id`", nullable = false)
     private Long paymentId;
 
-    @Column(name = "`user_id`", nullable = false, length = 25)
-    private String userId;
+    @Column(name = "`user_idx`", nullable = false)
+    private Long userIdx;
 
+    @Builder.Default
     @Column(name = "`payment_status_code`", nullable = false, length = 6)
     private String paymentStatusCode = "PS001";
 
@@ -29,6 +32,7 @@ public class Payment {
     @Column(name = "`total_price`", nullable = false)
     private long totalPrice;
 
+    @Builder.Default
     @Column(name = "`has_delivery_price`", nullable = false)
     private boolean hasDeliveryPrice = true;
 
@@ -38,6 +42,7 @@ public class Payment {
     @Column(name = "`payment_date`")
     private LocalDateTime paymentDate;
 
+    @Builder.Default
     @Column(name = "`is_valid`", nullable = false)
     private boolean isValid = true;
 }

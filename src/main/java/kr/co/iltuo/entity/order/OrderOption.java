@@ -5,8 +5,10 @@ import lombok.*;
 
 @Entity
 @Table(name = "`order_option`")
-@Data
-@NoArgsConstructor
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class OrderOption {
     @Id

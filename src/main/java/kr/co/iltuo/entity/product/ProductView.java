@@ -9,7 +9,7 @@ import java.time.*;
 @Entity
 @Table(name = "`product_view`")
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Immutable
 public class ProductView {
     @Id

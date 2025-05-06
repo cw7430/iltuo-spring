@@ -6,8 +6,10 @@ import lombok.*;
 
 @Entity
 @Table(name = "`option_detail`")
-@Data
-@NoArgsConstructor
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class OptionDetail {
     @Id
@@ -24,6 +26,7 @@ public class OptionDetail {
     @Column(name = "`option_fluctuating_price`", nullable = false)
     private int optionFluctuatingPrice;
 
+    @Builder.Default
     @Column(name = "`is_valid`", nullable = false)
     private boolean isValid = true;
 }

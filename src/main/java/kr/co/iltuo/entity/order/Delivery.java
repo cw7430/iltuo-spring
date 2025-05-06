@@ -7,8 +7,10 @@ import java.time.*;
 
 @Entity
 @Table(name = "`delivery`")
-@Data
-@NoArgsConstructor
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class Delivery {
     @Id
@@ -19,6 +21,7 @@ public class Delivery {
     @Column(name = "`payment_id`", nullable = false)
     private Long paymentId;
 
+    @Builder.Default
     @Column(name = "`delivery_status_code`", nullable = false, length = 6)
     private String deliveryStatusCode = "DS001";
 

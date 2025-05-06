@@ -15,9 +15,9 @@ public class AuthController {
 
     private final AuthService authService;
 
-    @PostMapping("/sign_in")
-    public ResponseDto<SignInResponseDto> signIn(@Valid @RequestBody SignInRequestDto signInRequestDto) {
-        return ResponseDto.success(authService.signIn(signInRequestDto));
+    @PostMapping("/sign_in_native")
+    public ResponseDto<SignInResponseDto> signInNative(@Valid @RequestBody NativeSignInRequestDto nativeSignInRequestDto) {
+        return ResponseDto.success(authService.signInNative(nativeSignInRequestDto));
     }
 
     @PostMapping("/check_id")
@@ -25,8 +25,8 @@ public class AuthController {
         return ResponseDto.success(authService.idDuplicateCheck(userIdDuplicateCheckRequestDto));
     }
 
-    @PostMapping("/sign_up")
-    public ResponseDto<SignInResponseDto> signUp(@Valid @RequestBody SignUpRequestDto signUpRequestDto) {
-        return ResponseDto.success(authService.signUp(signUpRequestDto));
+    @PostMapping("/sign_up_native")
+    public ResponseDto<SignInResponseDto> signUpNative(@Valid @RequestBody NativeSignUpRequestDto nativeSignUpRequestDto) {
+        return ResponseDto.success(authService.signUpNative(nativeSignUpRequestDto));
     }
 }

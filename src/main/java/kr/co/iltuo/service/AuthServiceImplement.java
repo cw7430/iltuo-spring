@@ -6,37 +6,47 @@ import kr.co.iltuo.common.exception.CustomException;
 import kr.co.iltuo.dto.request.auth.*;
 import kr.co.iltuo.entity.auth.*;
 import kr.co.iltuo.provider.JwtProvider;
-import kr.co.iltuo.repository.auth.AddressRepository;
-import kr.co.iltuo.repository.auth.UserRepository;
+import kr.co.iltuo.repository.auth.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import kr.co.iltuo.dto.response.auth.*;
 import lombok.*;
 
 import java.time.*;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class AuthServiceImplement implements AuthService {
 
     private final UserRepository userRepository;
+    private final NativeAuthRepository nativeAuthRepository;
     private final AddressRepository addressRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtProvider jwtProvider;
 
     @Override
-    public SignInResponseDto signIn(SignInRequestDto signInRequestDto) {
-        User user = userRepository.findByUserId(signInRequestDto.getUserId());
-        if (user == null || !passwordEncoder.matches(signInRequestDto.getPassword(), user.getPassword()) || !user.isValid()) {
+    public SignInResponseDto signInNative(NativeSignInRequestDto nativeSignInRequestDto) {
+        User user = userRepository.findByUserId(nativeSignInRequestDto.getUserId());
+        if (user == null || !user.isValid()) {
             throw new CustomException(ResponseCode.LOGIN_ERROR);
         }
+
+        NativeAuth nativeAuth = nativeAuthRepository.findById(user.getUserIdx())
+                .orElseThrow(() -> new CustomException(ResponseCode.LOGIN_ERROR));
+
+        if (!passwordEncoder.matches(nativeSignInRequestDto.getPassword(), nativeAuth.getPassword())) {
+            throw new CustomException(ResponseCode.LOGIN_ERROR);
+        }
+
         String token = jwtProvider.generateToken(user);
         return new SignInResponseDto(token);
     }
 
+
     @Override
     public UserIdDuplicateCheckResponseDto idDuplicateCheck(UserIdDuplicateCheckRequestDto userIdDuplicateCheckRequestDto) {
-        int count = userRepository.countByUserId(userIdDuplicateCheckRequestDto.getUserId());
+        int count = userRepository.countValidUserByUserId(userIdDuplicateCheckRequestDto.getUserId());
         if (count != 0) {
             throw new CustomException(ResponseCode.DUPLICATE_RESOURCE);
         }
@@ -45,27 +55,52 @@ public class AuthServiceImplement implements AuthService {
 
     @Override
     @Transactional
-    public SignInResponseDto signUp(SignUpRequestDto signUpRequestDto) {
-        User user = new User();
-        int count = userRepository.countByUserId(signUpRequestDto.getUserId());
+    public SignInResponseDto signUpNative(NativeSignUpRequestDto nativeSignUpRequestDto) {
+        int count = userRepository.countByUserId(nativeSignUpRequestDto.getUserId());
         if (count != 0) {
-            throw new CustomException(ResponseCode.DUPLICATE_RESOURCE);
+            User user = userRepository.findCanceledUserByUserId(nativeSignUpRequestDto.getUserId());
+            if(user == null){
+                throw new CustomException(ResponseCode.DUPLICATE_RESOURCE);
+            }
+//            user.setUserName(nativeSignUpRequestDto.getUserName());
+//            user.setPhoneNumber(nativeSignUpRequestDto.getPhoneNumber());
+//            user.setEmail(nativeSignUpRequestDto.getEmail());
+//            user.setRegisterDate(LocalDateTime.now());
+//            userRepository.save(user);
+//
+//            NativeAuth nativeAuth = nativeAuthRepository.findById(user.getUserIdx())
+//                    .orElseThrow(() -> new CustomException(ResponseCode.DUPLICATE_RESOURCE));
+//            nativeAuth.setPassword(passwordEncoder.encode(nativeSignUpRequestDto.getPassword()));
+//            nativeAuthRepository.save(nativeAuth);
+//
+//            Address address = addressRepository.findById(user.getUserIdx())
+//                    .orElseThrow(() -> new CustomException(ResponseCode.DUPLICATE_RESOURCE));
         }
-        Address address = new Address();
-        user.setUserId(signUpRequestDto.getUserId());
-        user.setPassword(passwordEncoder.encode(signUpRequestDto.getPassword()));
-        user.setUserName(signUpRequestDto.getUserName());
-        user.setPhoneNumber(signUpRequestDto.getPhoneNumber());
-        user.setEmail(signUpRequestDto.getEmail());
-        user.setRegisterDate(LocalDateTime.now());
+
+        User user = User.builder()
+                .userId(nativeSignUpRequestDto.getUserId())
+                .userName(nativeSignUpRequestDto.getUserName())
+                .phoneNumber(nativeSignUpRequestDto.getPhoneNumber())
+                .email(nativeSignUpRequestDto.getEmail())
+                .authMethodCode("AM001")
+                .registerDate(LocalDateTime.now())
+                .build();
         userRepository.save(user);
 
-        address.setUserId(signUpRequestDto.getUserId());
-        address.setPostalCode(signUpRequestDto.getPostalCode());
-        address.setDefaultAddress(signUpRequestDto.getDefaultAddress());
-        address.setDetailAddress(signUpRequestDto.getDetailAddress());
-        address.setExtraAddress(signUpRequestDto.getExtraAddress());
-        address.setMain(true);
+        NativeAuth nativeAuth = NativeAuth.builder()
+                .userIdx(user.getUserIdx())
+                .password(passwordEncoder.encode(nativeSignUpRequestDto.getPassword()))
+                .build();
+        nativeAuthRepository.save(nativeAuth);
+
+        Address address = Address.builder()
+                .userIdx(user.getUserIdx())
+                .postalCode(nativeSignUpRequestDto.getPostalCode())
+                .defaultAddress(nativeSignUpRequestDto.getDefaultAddress())
+                .detailAddress(nativeSignUpRequestDto.getDetailAddress())
+                .extraAddress(nativeSignUpRequestDto.getExtraAddress())
+                .isMain(true)
+                .build();
         addressRepository.save(address);
 
         String token = jwtProvider.generateToken(user);

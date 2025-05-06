@@ -5,7 +5,7 @@ import lombok.*;
 
 @Getter
 @NoArgsConstructor
-public class SignUpRequestDto {
+public class NativeSignUpRequestDto {
     @NotBlank(message = "아이디를 입력해주세요")
     @Pattern(
             regexp = "^(?=.*[a-zA-Z])[a-zA-Z0-9]{5,25}$",

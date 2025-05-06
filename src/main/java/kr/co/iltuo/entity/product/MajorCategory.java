@@ -5,8 +5,10 @@ import lombok.*;
 
 @Entity
 @Table(name = "`major_category`")
-@Data
-@NoArgsConstructor
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class MajorCategory {
 
@@ -18,6 +20,7 @@ public class MajorCategory {
     @Column(name = "`major_category_name`", nullable = false, length = 45)
     private String majorCategoryName;
 
+    @Builder.Default
     @Column(name = "`is_valid`", nullable = false)
     private boolean isValid  = true;
 }

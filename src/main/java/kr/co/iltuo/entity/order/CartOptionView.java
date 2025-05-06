@@ -7,7 +7,7 @@ import org.hibernate.annotations.Immutable;
 @Entity
 @Table(name = "`cart_option_view`")
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Immutable
 public class CartOptionView {
     @Id
