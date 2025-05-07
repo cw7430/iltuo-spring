@@ -50,4 +50,8 @@ public class User {
         this.email = email;
         this.registerDate = registerDate;
     }
+
+    public void updateUserValid(boolean isValid) {
+        this.isValid = isValid;
+    }
 }

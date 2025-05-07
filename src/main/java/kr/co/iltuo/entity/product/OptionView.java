@@ -32,6 +32,4 @@ public class OptionView {
     @Column(name = "`option_fluctuating_price`", nullable = false)
     private int optionFluctuatingPrice;
 
-    @Column(name = "`is_valid`", nullable = false)
-    private boolean isValid;
 }

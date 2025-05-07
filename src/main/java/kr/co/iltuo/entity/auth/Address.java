@@ -44,4 +44,12 @@ public class Address {
         this.extraAddress = extraAddress;
         this.isMain = isMain;
     }
+
+    public void updateMainAddress(boolean isMain) {
+        this.isMain = isMain;
+    }
+
+    public void updateAddressValid(boolean isValid) {
+        this.isValid = isValid;
+    }
 }

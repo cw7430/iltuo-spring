@@ -2,6 +2,7 @@ package kr.co.iltuo.common.exception;
 
 import kr.co.iltuo.common.code.ResponseCode;
 import kr.co.iltuo.dto.response.ResponseDto;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.ResponseEntity;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
 @RestControllerAdvice
+@Slf4j
 public class GlobalExceptionHandler {
 
     // 유효성 검증 실패
@@ -20,6 +22,8 @@ public class GlobalExceptionHandler {
                 .findFirst()
                 .map(DefaultMessageSourceResolvable::getDefaultMessage)
                 .orElse(ResponseCode.VALIDATION_ERROR.getMessage());
+
+        log.error("Validation failed: {}", errorMessage);
 
         return new ResponseEntity<>(
                 new ResponseDto<>(
@@ -35,6 +39,7 @@ public class GlobalExceptionHandler {
     // 커스텀 비즈니스 예외
     @ExceptionHandler(CustomException.class)
     public ResponseEntity<ResponseDto<Void>> handleCustomException(CustomException ex) {
+        log.error("Custom exception occurred: {}", ex.getResponseCode().getMessage());
         return new ResponseEntity<>(
                 ResponseDto.fail(ex.getResponseCode()),
                 ex.getResponseCode().getStatus()
@@ -44,12 +49,14 @@ public class GlobalExceptionHandler {
     // 데이터베이스 오류
     @ExceptionHandler(DataAccessException.class)
     public ResponseEntity<ResponseDto<Void>> handleDatabaseException(DataAccessException ex) {
+        log.error("Database exception occurred", ex);
         return new ResponseEntity<>(ResponseDto.fail(ResponseCode.DATABASE_ERROR), ResponseCode.DATABASE_ERROR.getStatus());
     }
 
     // 기타 서버 오류
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ResponseDto<Void>> handleGeneralException(Exception ex) {
+        log.error("Unhandled exception occurred", ex);
         return new ResponseEntity<>(
                 ResponseDto.fail(ResponseCode.INTERNAL_SERVER_ERROR),
                 ResponseCode.INTERNAL_SERVER_ERROR.getStatus()

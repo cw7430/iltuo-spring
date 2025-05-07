@@ -1,6 +1,7 @@
 package kr.co.iltuo.config;
 
 import kr.co.iltuo.contants.auth.AuthEndpoint;
+import kr.co.iltuo.contants.product.ProductEndpoint;
 import kr.co.iltuo.provider.*;
 import lombok.*;
 import org.springframework.context.annotation.*;
@@ -17,7 +18,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 public class WebSecurityConfig {
     private final JwtProvider jwtProvider;
-    private final String defaultUrl = "/api/v1";
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -26,7 +26,11 @@ public class WebSecurityConfig {
                 .sessionManagement(config -> config.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
-                                AuthEndpoint.SIGN_IN.getPath(), AuthEndpoint.SIGN_UP.getPath(), AuthEndpoint.CHECK_ID.getPath()
+                                AuthEndpoint.SIGN_IN_NATIVE.getPath(), AuthEndpoint.SIGN_UP_NATIVE.getPath(), AuthEndpoint.CHECK_ID.getPath(),
+                                ProductEndpoint.MAJOR_CATEGORY_LIST.getPath(), ProductEndpoint.RECOMMENDED_PRODUCT_LIST.getPath(),
+                                ProductEndpoint.MAJOR_CATEGORY.getPath(),ProductEndpoint.MINER_CATEGORY_LIST.getPath(),
+                                ProductEndpoint.PRODUCT_LIST.getPath(), ProductEndpoint.PRODUCT_DETAIL.getPath(),
+                                ProductEndpoint.OPTION_LIST.getPath(), ProductEndpoint.OPTION_DETAIL_LIST.getPath()
                         ).permitAll()
                         //.requestMatchers("/admin/**").hasRole("ADMIN")
                         //.requestMatchers("/user/**").hasAnyRole("USER", "ADMIN")

@@ -45,7 +45,7 @@ public class AuthServiceImplement implements AuthService {
 
     @Override
     public UserIdDuplicateCheckResponseDto idDuplicateCheck(UserIdDuplicateCheckRequestDto userIdDuplicateCheckRequestDto) {
-        int count = userRepository.countValidUserByUserId(userIdDuplicateCheckRequestDto.getUserId());
+        int count = userRepository.countByUserIdAndIsValidTrue(userIdDuplicateCheckRequestDto.getUserId());
         if (count != 0) {
             throw new CustomException(ResponseCode.DUPLICATE_RESOURCE);
         }
@@ -58,7 +58,7 @@ public class AuthServiceImplement implements AuthService {
         int count = userRepository.countByUserId(nativeSignUpRequestDto.getUserId());
         User user;
         if (count != 0) {
-            user = userRepository.findCanceledUserByUserId(nativeSignUpRequestDto.getUserId());
+            user = userRepository.findByUserIdAndIsValidFalse(nativeSignUpRequestDto.getUserId());
             if(user == null){
                 throw new CustomException(ResponseCode.DUPLICATE_RESOURCE);
             }
@@ -68,6 +68,7 @@ public class AuthServiceImplement implements AuthService {
                     nativeSignUpRequestDto.getEmail(),
                     LocalDateTime.now()
             );
+            user.updateUserValid(true);
             userRepository.save(user);
 
             NativeAuth nativeAuth = nativeAuthRepository.findById(user.getUserIdx())
@@ -75,7 +76,7 @@ public class AuthServiceImplement implements AuthService {
             nativeAuth.changePassword(passwordEncoder.encode(nativeSignUpRequestDto.getPassword()));
             nativeAuthRepository.save(nativeAuth);
 
-            Address address = addressRepository.findByMainAddressByUserIdx(user.getUserIdx());
+            Address address = addressRepository.findByUserIdxAndIsMainTrue(user.getUserIdx());
             if(address == null){
                 throw new CustomException(ResponseCode.CONFLICT);
             }

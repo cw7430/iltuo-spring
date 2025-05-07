@@ -43,7 +43,4 @@ public class ProductView {
     @Column(name = "`register_date`", nullable = false)
     private LocalDateTime registerDate;
 
-    @Column(name = "`is_valid`", nullable = false)
-    private boolean isValid;
-
 }
