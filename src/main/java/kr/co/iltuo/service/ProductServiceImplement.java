@@ -40,6 +40,7 @@ public class ProductServiceImplement implements ProductService {
                 .productComments(product.getProductComments())
                 .price(product.getPrice())
                 .discountedPrice(discountedPrice)
+                .optionCount(product.getOptionCount())
                 .discountedRate(product.getDiscountedRate())
                 .isRecommended(product.isRecommended())
                 .registerDate(product.getRegisterDate())
@@ -64,19 +65,13 @@ public class ProductServiceImplement implements ProductService {
     }
 
     @Override
-    public MajorCategory getMajorCategory(MajorCategoryRequestDto majorCategoryRequestDto) {
-        return majorCategoryRepository.findById(majorCategoryRequestDto.getMajorCategoryId())
-                .orElseThrow(() -> new CustomException(ResponseCode.CONFLICT));
+    public List<MinerCategory> getMinerCategoryList(ProductListRequestDto productListRequestDto) {
+        return minerCategoryRepository.findByMajorCategoryIdAndIsValidTrue(productListRequestDto.getMajorCategoryId());
     }
 
     @Override
-    public List<MinerCategory> getMinerCategoryList(MajorCategoryRequestDto majorCategoryRequestDto) {
-        return minerCategoryRepository.findByMajorCategoryIdAndIsValidTrue(majorCategoryRequestDto.getMajorCategoryId());
-    }
-
-    @Override
-    public List<ProductDataResponseDto> getProductList(MajorCategoryRequestDto majorCategoryRequestDto) {
-        List<ProductView> productList = productViewRepository.findByMajorCategoryId(majorCategoryRequestDto.getMajorCategoryId());
+    public List<ProductDataResponseDto> getProductList(ProductListRequestDto productListRequestDto) {
+        List<ProductView> productList = productViewRepository.findByMajorCategoryId(productListRequestDto.getMajorCategoryId());
         return makeProductList(productList);
     }
 
@@ -88,13 +83,13 @@ public class ProductServiceImplement implements ProductService {
     }
 
     @Override
-    public List<Option> getOptionList(MajorCategoryRequestDto majorCategoryRequestDto) {
-        return optionRepository.findByMajorCategoryIdAndIsValidTrue(majorCategoryRequestDto.getMajorCategoryId());
+    public List<Option> getOptionList(ProductListRequestDto productListRequestDto) {
+        return optionRepository.findByMajorCategoryIdAndIsValidTrue(productListRequestDto.getMajorCategoryId());
     }
 
     @Override
-    public List<OptionView> getOptionDetailList(MajorCategoryRequestDto majorCategoryRequestDto) {
-        return optionViewRepository.findByMajorCategoryId(majorCategoryRequestDto.getMajorCategoryId());
+    public List<OptionView> getOptionDetailList(ProductListRequestDto productListRequestDto) {
+        return optionViewRepository.findByMajorCategoryId(productListRequestDto.getMajorCategoryId());
     }
 
 }

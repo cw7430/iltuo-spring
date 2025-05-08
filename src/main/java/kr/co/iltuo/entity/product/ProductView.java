@@ -37,6 +37,9 @@ public class ProductView {
     @Column(name = "`discounted_rate`", nullable = false)
     private int discountedRate;
 
+    @Column(name = "`option_count`", nullable = false)
+    private long optionCount;
+
     @Column(name = "`is_recommended`", nullable = false)
     private boolean isRecommended;
 

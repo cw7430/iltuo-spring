@@ -27,33 +27,28 @@ public class ProductController {
         return ResponseDto.success(productService.getRecommendedProductList());
     }
 
-    @GetMapping("/major_category")
-    public ResponseDto<MajorCategory> getMajorCategory(MajorCategoryRequestDto majorCategoryRequestDto) {
-        return ResponseDto.success(productService.getMajorCategory(majorCategoryRequestDto));
-    }
-
     @GetMapping("/miner_category_list")
-    public ResponseDto<List<MinerCategory>> getMinerCategoryList(MajorCategoryRequestDto majorCategoryRequestDto) {
-        return ResponseDto.success(productService.getMinerCategoryList(majorCategoryRequestDto));
+    public ResponseDto<List<MinerCategory>> getMinerCategoryList(@ModelAttribute ProductListRequestDto productListRequestDto) {
+        return ResponseDto.success(productService.getMinerCategoryList(productListRequestDto));
     }
 
     @GetMapping("/product_list")
-    public ResponseDto<List<ProductDataResponseDto>> getProductList(MajorCategoryRequestDto majorCategoryRequestDto) {
-        return ResponseDto.success(productService.getProductList(majorCategoryRequestDto));
+    public ResponseDto<List<ProductDataResponseDto>> getProductList(@ModelAttribute ProductListRequestDto productListRequestDto) {
+        return ResponseDto.success(productService.getProductList(productListRequestDto));
     }
 
     @GetMapping("/product_detail")
-    public ResponseDto<ProductDataResponseDto> getProduct(ProductRequestDto productRequestDto) {
+    public ResponseDto<ProductDataResponseDto> getProduct(@ModelAttribute ProductRequestDto productRequestDto) {
         return ResponseDto.success(productService.getProduct(productRequestDto));
     }
 
     @GetMapping("/option_list")
-    public ResponseDto<List<Option>> getOptionList(MajorCategoryRequestDto majorCategoryRequestDto) {
-        return ResponseDto.success(productService.getOptionList(majorCategoryRequestDto));
+    public ResponseDto<List<Option>> getOptionList(@ModelAttribute ProductListRequestDto productListRequestDto) {
+        return ResponseDto.success(productService.getOptionList(productListRequestDto));
     }
 
     @GetMapping("/option_detail_list")
-    public ResponseDto<List<OptionView>> getOptionDetailList(MajorCategoryRequestDto majorCategoryRequestDto) {
-        return ResponseDto.success(productService.getOptionDetailList(majorCategoryRequestDto));
+    public ResponseDto<List<OptionView>> getOptionDetailList(@ModelAttribute ProductListRequestDto productListRequestDto) {
+        return ResponseDto.success(productService.getOptionDetailList(productListRequestDto));
     }
 }

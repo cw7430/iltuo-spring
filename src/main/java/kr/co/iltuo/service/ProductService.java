@@ -9,10 +9,9 @@ import java.util.*;
 public interface ProductService {
     List<MajorCategory> getMajorCategoryList();
     List<ProductDataResponseDto> getRecommendedProductList();
-    MajorCategory getMajorCategory(MajorCategoryRequestDto majorCategoryRequestDto);
-    List<MinerCategory> getMinerCategoryList(MajorCategoryRequestDto majorCategoryRequestDto);
-    List<ProductDataResponseDto> getProductList(MajorCategoryRequestDto majorCategoryRequestDto);
+    List<MinerCategory> getMinerCategoryList(ProductListRequestDto productListRequestDto);
+    List<ProductDataResponseDto> getProductList(ProductListRequestDto productListRequestDto);
     ProductDataResponseDto getProduct(ProductRequestDto productRequestDto);
-    List<Option> getOptionList(MajorCategoryRequestDto majorCategoryRequestDto);
-    List<OptionView> getOptionDetailList(MajorCategoryRequestDto majorCategoryRequestDto);
+    List<Option> getOptionList(ProductListRequestDto productListRequestDto);
+    List<OptionView> getOptionDetailList(ProductListRequestDto productListRequestDto);
 }

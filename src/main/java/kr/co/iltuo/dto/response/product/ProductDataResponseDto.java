@@ -16,6 +16,7 @@ public class ProductDataResponseDto {
     private String productComments;
     private long price;
     private long discountedPrice;
+    private long optionCount;
     private int discountedRate;
     private boolean isRecommended;
     private LocalDateTime registerDate;
