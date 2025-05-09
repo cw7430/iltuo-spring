@@ -33,12 +33,12 @@ public class WebSecurityConfig {
                         .requestMatchers(
                                 AuthEndpoint.SIGN_IN_NATIVE.getPath(), AuthEndpoint.SIGN_UP_NATIVE.getPath(), AuthEndpoint.CHECK_ID.getPath(),
                                 ProductEndpoint.MAJOR_CATEGORY_LIST.getPath(), ProductEndpoint.RECOMMENDED_PRODUCT_LIST.getPath(),
-                                ProductEndpoint.MAJOR_CATEGORY.getPath(),ProductEndpoint.MINER_CATEGORY_LIST.getPath(),
+                                ProductEndpoint.MAJOR_CATEGORY.getPath(), ProductEndpoint.MINER_CATEGORY_LIST.getPath(),
                                 ProductEndpoint.PRODUCT_LIST.getPath(), ProductEndpoint.PRODUCT_DETAIL.getPath(),
                                 ProductEndpoint.OPTION_LIST.getPath(), ProductEndpoint.OPTION_DETAIL_LIST.getPath()
                         ).permitAll()
-                        //.requestMatchers("/admin/**").hasRole("ADMIN")
-                        //.requestMatchers("/user/**").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers("/user/**").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(new JwtAuthenticationFilter(jwtProvider), UsernamePasswordAuthenticationFilter.class)
