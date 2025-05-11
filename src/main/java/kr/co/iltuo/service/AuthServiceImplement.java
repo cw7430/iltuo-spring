@@ -38,8 +38,15 @@ public class AuthServiceImplement implements AuthService {
             throw new CustomException(ResponseCode.LOGIN_ERROR);
         }
 
-        String token = jwtProvider.generateToken(user);
-        return new SignInResponseDto(token);
+        String accessToken = jwtProvider.generateAccessToken(user);
+        String refreshToken = jwtProvider.generateRefreshToken(user);
+        long accessTokenExpiresAt = jwtProvider.getAccessTokenExpiration(accessToken);
+
+        return SignInResponseDto.builder()
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .accessTokenExpiresAt(accessTokenExpiresAt)
+                .build();
     }
 
 
@@ -116,7 +123,14 @@ public class AuthServiceImplement implements AuthService {
                     .build();
             addressRepository.save(address);
         }
-        String token = jwtProvider.generateToken(user);
-        return new SignInResponseDto(token);
+        String accessToken = jwtProvider.generateAccessToken(user);
+        String refreshToken = jwtProvider.generateRefreshToken(user);
+        long accessTokenExpiresAt = jwtProvider.getAccessTokenExpiration(accessToken);
+
+        return SignInResponseDto.builder()
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .accessTokenExpiresAt(accessTokenExpiresAt)
+                .build();
     }
 }

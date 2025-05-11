@@ -23,8 +23,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String token = resolveToken(request);
 
-        if (StringUtils.hasText(token) && jwtProvider.validateToken(token)) {
-            Claims claims = jwtProvider.getClaims(token);
+        if (StringUtils.hasText(token) && jwtProvider.validateAccessToken(token)) {
+            Claims claims = jwtProvider.getAccessClaims(token);
             String userId = claims.getSubject();
             String roleCode = claims.get("userPermissionsCode", String.class);
 

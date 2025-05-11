@@ -1,4 +1,12 @@
 package kr.co.iltuo.dto.response.auth;
 
-public record SignInResponseDto(String accessToken) {
+import lombok.*;
+
+@Getter
+@AllArgsConstructor
+@Builder
+public class SignInResponseDto {
+    private String accessToken;
+    private String refreshToken;
+    private long accessTokenExpiresAt;
 }
