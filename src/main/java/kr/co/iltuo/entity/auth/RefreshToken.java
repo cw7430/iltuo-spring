@@ -19,15 +19,11 @@ public class RefreshToken {
     @Column(name = "`token`", nullable = false)
     private String token;
 
-    @Column(name = "`created_at`", nullable = false)
-    private LocalDateTime createdAt;
-
     @Column(name = "`expires_at`", nullable = false)
-    private LocalDateTime expiresAt;
+    private Instant expiresAt;
 
-    public void updateRefreshToken(String token, LocalDateTime createdAt, LocalDateTime expiresAt) {
+    public void updateRefreshToken(String token, Instant expiresAt) {
         this.token = token;
-        this.createdAt = createdAt;
         this.expiresAt = expiresAt;
     }
 }

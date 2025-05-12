@@ -43,8 +43,8 @@ public class Delivery {
     private String invoiceNumber;
 
     @Column(name = "`delivery_date`")
-    private LocalDateTime deliveryDate;
+    private Instant deliveryDate;
 
     @Column(name = "`arrive_date`")
-    private LocalDateTime arriveDate;
+    private Instant arriveDate;
 }

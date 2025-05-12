@@ -3,6 +3,8 @@ package kr.co.iltuo.provider;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import kr.co.iltuo.common.code.ResponseCode;
+import kr.co.iltuo.common.exception.CustomException;
 import kr.co.iltuo.entity.auth.User;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -113,12 +115,23 @@ public class JwtProvider {
         return claims.getExpiration().getTime();
     }
 
-    public String getUserIdFromToken(String token) {
+    public String getUserIdFromAccessToken(String token) {
         return getAccessClaims(token).getSubject(); // "subject"는 userId
+    }
+
+    public String getUserIdFromRefreshToken(String token) {
+        return getRefreshClaims(token).getSubject();
     }
 
     public String getUserPermissionCodeFromToken(String token) {
         return getAccessClaims(token).get("userPermissionsCode", String.class);
+    }
+
+    public String extractTokenFromHeader(String authorizationHeader) {
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            return authorizationHeader.substring(7);
+        }
+        throw new CustomException(ResponseCode.UNAUTHORIZED);
     }
 
 }

@@ -19,5 +19,5 @@ public class ProductDataResponseDto {
     private long optionCount;
     private int discountedRate;
     private boolean isRecommended;
-    private LocalDateTime registerDate;
+    private Instant registerDate;
 }

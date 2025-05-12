@@ -36,10 +36,10 @@ public class Payment {
     private boolean hasDeliveryPrice = true;
 
     @Column(name = "`order_date`", nullable = false)
-    private LocalDateTime orderDate;
+    private Instant orderDate;
 
     @Column(name = "`payment_date`")
-    private LocalDateTime paymentDate;
+    private Instant paymentDate;
 
     @Builder.Default
     @Column(name = "`is_valid`", nullable = false)

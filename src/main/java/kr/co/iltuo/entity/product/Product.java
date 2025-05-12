@@ -40,7 +40,7 @@ public class Product {
     private boolean isRecommended;
 
     @Column(name = "`register_date`", nullable = false)
-    private LocalDateTime registerDate;
+    private Instant registerDate;
 
     @Builder.Default
     @Column(name = "`is_valid`", nullable = false)

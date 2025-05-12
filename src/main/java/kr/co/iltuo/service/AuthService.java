@@ -7,4 +7,5 @@ public interface AuthService {
     SignInResponseDto signInNative(NativeSignInRequestDto nativeSignInRequestDto);
     UserIdDuplicateCheckResponseDto idDuplicateCheck(UserIdDuplicateCheckRequestDto userIdDuplicateCheckRequestDto);
     SignInResponseDto signUpNative(NativeSignUpRequestDto nativeSignUpRequestDto);
+    AccessTokenResponseDto refreshAccessToken(String authorizationHeader);
 }

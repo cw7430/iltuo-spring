@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.Immutable;
 
-import java.time.LocalDateTime;
+import java.time.*;
 
 @Entity
 @Table(name = "`native_user_view`")
@@ -29,7 +29,7 @@ public class SocialUserView {
     private String email;
 
     @Column(name = "`register_date`", nullable = false)
-    private LocalDateTime registerDate;
+    private Instant registerDate;
 
     @Column(name = "`user_permissions_code`", nullable = false, length = 6)
     private String userPermissionsCode;

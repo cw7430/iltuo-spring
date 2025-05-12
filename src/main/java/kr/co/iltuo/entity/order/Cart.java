@@ -26,5 +26,5 @@ public class Cart {
     private int quantity;
 
     @Column(name = "`cart_date`", nullable = false)
-    private LocalDateTime cartDate;
+    private Instant cartDate;
 }

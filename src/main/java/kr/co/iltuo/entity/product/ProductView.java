@@ -44,6 +44,6 @@ public class ProductView {
     private boolean isRecommended;
 
     @Column(name = "`register_date`", nullable = false)
-    private LocalDateTime registerDate;
+    private Instant registerDate;
 
 }

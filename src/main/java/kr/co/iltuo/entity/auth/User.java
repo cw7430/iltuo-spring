@@ -31,7 +31,7 @@ public class User {
     private String email;
 
     @Column(name = "`register_date`", nullable = false)
-    private LocalDateTime registerDate;
+    private Instant registerDate;
 
     @Builder.Default
     @Column(name = "`user_permissions_code`", nullable = false, length = 6)
@@ -44,7 +44,7 @@ public class User {
     @Column(name = "`is_valid`", nullable = false)
     private boolean isValid = true;
 
-    public void updateInfo(String userName, String phoneNumber, String email, LocalDateTime registerDate) {
+    public void updateInfo(String userName, String phoneNumber, String email, Instant registerDate) {
         this.userName = userName;
         this.phoneNumber = phoneNumber;
         this.email = email;

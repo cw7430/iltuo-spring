@@ -29,4 +29,9 @@ public class AuthController {
     public ResponseDto<SignInResponseDto> signUpNative(@Valid @RequestBody NativeSignUpRequestDto nativeSignUpRequestDto) {
         return ResponseDto.success(authService.signUpNative(nativeSignUpRequestDto));
     }
+
+    @PostMapping("/refresh_Token")
+    public ResponseDto<AccessTokenResponseDto> refreshAccessToken(@RequestHeader("Authorization") String authorizationHeader) {
+        return ResponseDto.success(authService.refreshAccessToken(authorizationHeader));
+    }
 }
