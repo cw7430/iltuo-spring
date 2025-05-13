@@ -1,4 +1,4 @@
 package kr.co.iltuo.dto.response.auth;
 
-public record UserIdDuplicateCheckResponseDto(boolean isDuplicated) {
+public record UserIdDuplicateCheckResponseDto(boolean notDuplicated) {
 }

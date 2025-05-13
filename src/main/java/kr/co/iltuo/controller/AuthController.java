@@ -1,5 +1,6 @@
 package kr.co.iltuo.controller;
 
+import jakarta.servlet.http.*;
 import jakarta.validation.Valid;
 import kr.co.iltuo.dto.request.auth.*;
 import kr.co.iltuo.dto.response.auth.*;
@@ -16,8 +17,8 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/sign_in_native")
-    public ResponseDto<SignInResponseDto> signInNative(@Valid @RequestBody NativeSignInRequestDto nativeSignInRequestDto) {
-        return ResponseDto.success(authService.signInNative(nativeSignInRequestDto));
+    public ResponseDto<SignInResponseDto> signInNative(HttpServletResponse response, @Valid @RequestBody NativeSignInRequestDto nativeSignInRequestDto) {
+        return ResponseDto.success(authService.signInNative(response, nativeSignInRequestDto));
     }
 
     @PostMapping("/check_id")
@@ -26,12 +27,18 @@ public class AuthController {
     }
 
     @PostMapping("/sign_up_native")
-    public ResponseDto<SignInResponseDto> signUpNative(@Valid @RequestBody NativeSignUpRequestDto nativeSignUpRequestDto) {
-        return ResponseDto.success(authService.signUpNative(nativeSignUpRequestDto));
+    public ResponseDto<SignInResponseDto> signUpNative(HttpServletResponse response, @Valid @RequestBody NativeSignUpRequestDto nativeSignUpRequestDto) {
+        return ResponseDto.success(authService.signUpNative(response, nativeSignUpRequestDto));
     }
 
-    @PostMapping("/refresh_Token")
-    public ResponseDto<AccessTokenResponseDto> refreshAccessToken(@RequestHeader("Authorization") String authorizationHeader) {
-        return ResponseDto.success(authService.refreshAccessToken(authorizationHeader));
+    @GetMapping("/refresh_Token")
+    public ResponseDto<RefreshAccessTokenResponseDto> refreshAccessToken(HttpServletRequest request, HttpServletResponse response) {
+        return ResponseDto.success(authService.refreshAccessToken(request, response));
+    }
+
+    @GetMapping("/logout")
+    public ResponseDto<Void> logout(HttpServletRequest request, HttpServletResponse response) {
+        authService.logout(request, response);
+        return ResponseDto.success(null);
     }
 }

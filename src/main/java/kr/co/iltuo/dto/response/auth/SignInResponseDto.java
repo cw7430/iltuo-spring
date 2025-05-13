@@ -6,8 +6,7 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class SignInResponseDto {
-    private String accessToken;
-    private String refreshToken;
     private long accessTokenExpiresAt;
     private long refreshTokenExpiresAt;
+    private String userPermission;
 }

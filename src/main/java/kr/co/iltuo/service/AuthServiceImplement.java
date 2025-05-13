@@ -1,5 +1,6 @@
 package kr.co.iltuo.service;
 
+import jakarta.servlet.http.*;
 import jakarta.transaction.Transactional;
 import kr.co.iltuo.common.code.ResponseCode;
 import kr.co.iltuo.common.exception.CustomException;
@@ -11,6 +12,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import kr.co.iltuo.dto.response.auth.*;
 import lombok.*;
+import org.springframework.util.StringUtils;
 
 import java.time.*;
 
@@ -24,6 +26,10 @@ public class AuthServiceImplement implements AuthService {
     private final RefreshTokenRepository refreshTokenRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtProvider jwtProvider;
+
+    private static String getPermission(String userPermissionsCode) {
+       return "AR002".equals(userPermissionsCode) ? "ADMIN" : "USER";
+    }
 
     private static AccessTokenResponseDto getAccessToken(JwtProvider jwtProvider, User user) {
         String accessToken = jwtProvider.generateAccessToken(user);
@@ -63,12 +69,51 @@ public class AuthServiceImplement implements AuthService {
         refreshTokenRepository.save(refreshToken);
     }
 
-    private static SignInResponseDto getAccessAndRefreshToken(AccessTokenResponseDto accessTokenResponseDto, RefreshTokenResponseDto refreshTokenResponseDto) {
+    private static void setAccessToken(HttpServletResponse response, AccessTokenResponseDto accessTokenResponseDto) {
+        Cookie accessTokenCookie = new Cookie("accessToken", accessTokenResponseDto.accessToken());
+        accessTokenCookie.setHttpOnly(true);
+        accessTokenCookie.setSecure(true);
+        accessTokenCookie.setPath("/");
+        accessTokenCookie.setMaxAge((int)((accessTokenResponseDto.accessTokenExpiresAt() - System.currentTimeMillis()) / 1000));
+        accessTokenCookie.setAttribute("SameSite", "Strict");
+        response.addCookie(accessTokenCookie);
+    }
+
+    private void setRefreshToken(HttpServletResponse response, RefreshTokenResponseDto refreshTokenResponseDto) {
+        Cookie refreshTokenCookie = new Cookie("refreshToken", refreshTokenResponseDto.refreshToken());
+        refreshTokenCookie.setHttpOnly(true);
+        refreshTokenCookie.setSecure(true);
+        refreshTokenCookie.setPath("/");
+        refreshTokenCookie.setMaxAge((int)((refreshTokenResponseDto.refreshTokenExpiresAt() - System.currentTimeMillis()) / 1000));
+        refreshTokenCookie.setAttribute("SameSite", "Strict");
+        response.addCookie(refreshTokenCookie);
+    }
+
+    private static void removeAccessToken(HttpServletResponse response) {
+        Cookie cookie = new Cookie("accessToken", null);
+        cookie.setHttpOnly(true);
+        cookie.setSecure(true);
+        cookie.setPath("/");
+        cookie.setMaxAge(0);
+        cookie.setAttribute("SameSite", "Strict");
+        response.addCookie(cookie);
+    }
+
+    private void removeRefreshToken(HttpServletResponse response) {
+        Cookie cookie = new Cookie("refreshToken", null);
+        cookie.setHttpOnly(true);
+        cookie.setSecure(true);
+        cookie.setPath("/");
+        cookie.setMaxAge(0);
+        cookie.setAttribute("SameSite", "Strict");
+        response.addCookie(cookie);
+    }
+
+    private static SignInResponseDto setSignInInfo(AccessTokenResponseDto accessTokenResponseDto, RefreshTokenResponseDto refreshTokenResponseDto, String userPermission) {
         return SignInResponseDto.builder()
-                .accessToken(accessTokenResponseDto.accessToken())
                 .accessTokenExpiresAt(accessTokenResponseDto.accessTokenExpiresAt())
-                .refreshToken(refreshTokenResponseDto.refreshToken())
                 .refreshTokenExpiresAt(refreshTokenResponseDto.refreshTokenExpiresAt())
+                .userPermission(userPermission)
                 .build();
     }
 
@@ -115,7 +160,7 @@ public class AuthServiceImplement implements AuthService {
 
     @Override
     @Transactional
-    public SignInResponseDto signInNative(NativeSignInRequestDto nativeSignInRequestDto) {
+    public SignInResponseDto signInNative(HttpServletResponse response, NativeSignInRequestDto nativeSignInRequestDto) {
         User user = userRepository.findByUserId(nativeSignInRequestDto.getUserId());
         if (user == null || !user.isValid()) {
             throw new CustomException(ResponseCode.LOGIN_ERROR);
@@ -128,11 +173,15 @@ public class AuthServiceImplement implements AuthService {
             throw new CustomException(ResponseCode.LOGIN_ERROR);
         }
 
+        String userPermission = getPermission(user.getUserPermissionsCode());
+
         AccessTokenResponseDto accessTokenResponseDto = getAccessToken(jwtProvider,user);
+        setAccessToken(response, accessTokenResponseDto);
         RefreshTokenResponseDto refreshTokenResponseDto = getRefreshToken(jwtProvider,user);
+        setRefreshToken(response, refreshTokenResponseDto);
         upsertRefreshToken(user, refreshTokenResponseDto);
 
-        return getAccessAndRefreshToken(accessTokenResponseDto, refreshTokenResponseDto);
+        return setSignInInfo(accessTokenResponseDto, refreshTokenResponseDto, userPermission);
     }
 
 
@@ -147,7 +196,7 @@ public class AuthServiceImplement implements AuthService {
 
     @Override
     @Transactional
-    public SignInResponseDto signUpNative(NativeSignUpRequestDto nativeSignUpRequestDto) {
+    public SignInResponseDto signUpNative(HttpServletResponse response, NativeSignUpRequestDto nativeSignUpRequestDto) {
         int userCount = userRepository.countByUserId(nativeSignUpRequestDto.getUserId());
         User user;
         if (userCount != 0) {
@@ -184,35 +233,34 @@ public class AuthServiceImplement implements AuthService {
             Address address = insertAddress(nativeSignUpRequestDto, user);
             addressRepository.save(address);
         }
+        String userPermission = getPermission(user.getUserPermissionsCode());
+
         AccessTokenResponseDto accessTokenResponseDto = getAccessToken(jwtProvider,user);
+        setAccessToken(response, accessTokenResponseDto);
         RefreshTokenResponseDto refreshTokenResponseDto = getRefreshToken(jwtProvider,user);
+        setRefreshToken(response, refreshTokenResponseDto);
         upsertRefreshToken(user, refreshTokenResponseDto);
 
-        return getAccessAndRefreshToken(accessTokenResponseDto, refreshTokenResponseDto);
+        return setSignInInfo(accessTokenResponseDto, refreshTokenResponseDto, userPermission);
     }
 
     @Override
-    public AccessTokenResponseDto refreshAccessToken(String authorizationHeader) {
-        String refreshToken = jwtProvider.extractTokenFromHeader(authorizationHeader);
+    public RefreshAccessTokenResponseDto refreshAccessToken(HttpServletRequest request, HttpServletResponse response) {
+        String refreshToken = jwtProvider.extractRefreshTokenFromCookie(request);
 
-        if (!jwtProvider.validateRefreshToken(refreshToken)) {
-            // 401
+        if (!StringUtils.hasText(refreshToken) || !jwtProvider.validateRefreshToken(refreshToken)) {
             throw new CustomException(ResponseCode.UNAUTHORIZED);
         }
 
         String userId = jwtProvider.getUserIdFromRefreshToken(refreshToken);
-
         User user = userRepository.findByUserId(userId);
         if (user == null || !user.isValid()) {
-            // 404
             throw new CustomException(ResponseCode.RESOURCE_NOT_FOUND);
         }
 
-        // 401
         RefreshToken savedToken = refreshTokenRepository.findById(user.getUserIdx())
                 .orElseThrow(() -> new CustomException(ResponseCode.UNAUTHORIZED));
 
-        // 401
         if (!savedToken.getToken().equals(refreshToken)) {
             throw new CustomException(ResponseCode.UNAUTHORIZED);
         }
@@ -221,10 +269,29 @@ public class AuthServiceImplement implements AuthService {
             throw new CustomException(ResponseCode.UNAUTHORIZED);
         }
 
-        String newAccessToken = jwtProvider.generateAccessToken(user);
-        long expiresAt = jwtProvider.getAccessTokenExpiration(newAccessToken);
+        AccessTokenResponseDto accessTokenResponseDto = getAccessToken(jwtProvider, user);
+        setAccessToken(response, accessTokenResponseDto);
 
-        return new AccessTokenResponseDto(newAccessToken, expiresAt);
+        String userPermission = getPermission(user.getUserPermissionsCode());
 
+        return new RefreshAccessTokenResponseDto(accessTokenResponseDto.accessTokenExpiresAt(), userPermission);
     }
+
+    @Override
+    public void logout(HttpServletRequest request, HttpServletResponse response) {
+        String refreshToken = jwtProvider.extractRefreshTokenFromCookie(request);
+
+        if (StringUtils.hasText(refreshToken) && jwtProvider.validateRefreshToken(refreshToken)) {
+            String userId = jwtProvider.getUserIdFromRefreshToken(refreshToken);
+            User user = userRepository.findByUserId(userId);
+
+            if (user != null) {
+                refreshTokenRepository.deleteById(user.getUserIdx());
+            }
+        }
+
+        removeAccessToken(response);
+        removeRefreshToken(response);
+    }
+
 }
