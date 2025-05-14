@@ -70,23 +70,25 @@ public class AuthServiceImplement implements AuthService {
     }
 
     private static void setAccessToken(HttpServletResponse response, AccessTokenResponseDto accessTokenResponseDto) {
-        Cookie accessTokenCookie = new Cookie("accessToken", accessTokenResponseDto.accessToken());
-        accessTokenCookie.setHttpOnly(true);
-        accessTokenCookie.setSecure(true);
-        accessTokenCookie.setPath("/");
-        accessTokenCookie.setMaxAge((int)((accessTokenResponseDto.accessTokenExpiresAt() - System.currentTimeMillis()) / 1000));
-        accessTokenCookie.setAttribute("SameSite", "Strict");
-        response.addCookie(accessTokenCookie);
+        Cookie cookie = new Cookie("accessToken", accessTokenResponseDto.accessToken());
+        cookie.setHttpOnly(true);
+        cookie.setSecure(true);
+        cookie.setPath("/");
+        // cookie.setMaxAge((int)((accessTokenResponseDto.accessTokenExpiresAt() - System.currentTimeMillis()) / 1000));
+        cookie.setMaxAge(-1);
+        cookie.setAttribute("SameSite", "Strict");
+        response.addCookie(cookie);
     }
 
     private void setRefreshToken(HttpServletResponse response, RefreshTokenResponseDto refreshTokenResponseDto) {
-        Cookie refreshTokenCookie = new Cookie("refreshToken", refreshTokenResponseDto.refreshToken());
-        refreshTokenCookie.setHttpOnly(true);
-        refreshTokenCookie.setSecure(true);
-        refreshTokenCookie.setPath("/");
-        refreshTokenCookie.setMaxAge((int)((refreshTokenResponseDto.refreshTokenExpiresAt() - System.currentTimeMillis()) / 1000));
-        refreshTokenCookie.setAttribute("SameSite", "Strict");
-        response.addCookie(refreshTokenCookie);
+        Cookie cookie = new Cookie("refreshToken", refreshTokenResponseDto.refreshToken());
+        cookie.setHttpOnly(true);
+        cookie.setSecure(true);
+        cookie.setPath("/");
+        // cookie.setMaxAge((int)((refreshTokenResponseDto.refreshTokenExpiresAt() - System.currentTimeMillis()) / 1000));
+        cookie.setMaxAge(-1);
+        cookie.setAttribute("SameSite", "Strict");
+        response.addCookie(cookie);
     }
 
     private static void removeAccessToken(HttpServletResponse response) {
