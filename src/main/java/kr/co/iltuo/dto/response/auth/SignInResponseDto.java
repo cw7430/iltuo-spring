@@ -9,4 +9,5 @@ public class SignInResponseDto {
     private long accessTokenExpiresAt;
     private long refreshTokenExpiresAt;
     private String userPermission;
+    private String authMethod;
 }

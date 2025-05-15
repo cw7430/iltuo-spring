@@ -21,15 +21,6 @@ public class User {
     @Column(name = "`user_id`", unique = true, nullable = false, length = 25)
     private String userId;
 
-    @Column(name = "`user_name`", nullable = false, length = 100)
-    private String userName;
-
-    @Column(name = "`phone_number`", nullable = false, length = 15)
-    private String phoneNumber;
-
-    @Column(name = "`email`", nullable = false, length = 100)
-    private String email;
-
     @Column(name = "`register_date`", nullable = false)
     private Instant registerDate;
 
@@ -44,10 +35,7 @@ public class User {
     @Column(name = "`is_valid`", nullable = false)
     private boolean isValid = true;
 
-    public void updateInfo(String userName, String phoneNumber, String email, Instant registerDate) {
-        this.userName = userName;
-        this.phoneNumber = phoneNumber;
-        this.email = email;
+    public void updateUser(Instant registerDate) {
         this.registerDate = registerDate;
     }
 

@@ -19,15 +19,6 @@ public class SocialUserView {
     @Column(name = "`user_id`", unique = true, nullable = false, length = 25)
     private String userId;
 
-    @Column(name = "`user_name`", nullable = false, length = 100)
-    private String userName;
-
-    @Column(name = "`phone_number`", nullable = false, length = 15)
-    private String phoneNumber;
-
-    @Column(name = "`email`", nullable = false, length = 100)
-    private String email;
-
     @Column(name = "`register_date`", nullable = false)
     private Instant registerDate;
 

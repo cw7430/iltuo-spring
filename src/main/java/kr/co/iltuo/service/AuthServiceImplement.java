@@ -28,7 +28,16 @@ public class AuthServiceImplement implements AuthService {
     private final JwtProvider jwtProvider;
 
     private static String getPermission(String userPermissionsCode) {
-       return "AR002".equals(userPermissionsCode) ? "ADMIN" : "USER";
+        return "AR002".equals(userPermissionsCode) ? "ADMIN" : "USER";
+    }
+
+    private static String getAuthMethod(String authMethodCode) {
+        return switch (authMethodCode) {
+            case "AM001" -> "NATIVE";
+            case "AM002" -> "SOCIAL";
+            case "AM003" -> "CROSS";
+            default -> "GUEST";
+        };
     }
 
     private static AccessTokenResponseDto getAccessToken(JwtProvider jwtProvider, User user) {
@@ -111,30 +120,25 @@ public class AuthServiceImplement implements AuthService {
         response.addCookie(cookie);
     }
 
-    private static SignInResponseDto setSignInInfo(AccessTokenResponseDto accessTokenResponseDto, RefreshTokenResponseDto refreshTokenResponseDto, String userPermission) {
+    private static SignInResponseDto setSignInInfo(AccessTokenResponseDto accessTokenResponseDto, RefreshTokenResponseDto refreshTokenResponseDto, String userPermission, String authMethod) {
         return SignInResponseDto.builder()
                 .accessTokenExpiresAt(accessTokenResponseDto.accessTokenExpiresAt())
                 .refreshTokenExpiresAt(refreshTokenResponseDto.refreshTokenExpiresAt())
                 .userPermission(userPermission)
+                .authMethod(authMethod)
                 .build();
     }
 
     private static User insertUser(NativeSignUpRequestDto nativeSignUpRequestDto) {
         return User.builder()
                 .userId(nativeSignUpRequestDto.getUserId())
-                .userName(nativeSignUpRequestDto.getUserName())
-                .phoneNumber(nativeSignUpRequestDto.getPhoneNumber())
-                .email(nativeSignUpRequestDto.getEmail())
                 .authMethodCode("AM001")
                 .registerDate(Instant.now())
                 .build();
     }
 
-    private static void updateUser(NativeSignUpRequestDto nativeSignUpRequestDto, User user) {
-        user.updateInfo(
-                nativeSignUpRequestDto.getUserName(),
-                nativeSignUpRequestDto.getPhoneNumber(),
-                nativeSignUpRequestDto.getEmail(),
+    private static void updateUser(User user) {
+        user.updateUser(
                 Instant.now()
         );
     }
@@ -176,14 +180,15 @@ public class AuthServiceImplement implements AuthService {
         }
 
         String userPermission = getPermission(user.getUserPermissionsCode());
+        String authMethod = getAuthMethod(user.getAuthMethodCode());
 
-        AccessTokenResponseDto accessTokenResponseDto = getAccessToken(jwtProvider,user);
+        AccessTokenResponseDto accessTokenResponseDto = getAccessToken(jwtProvider, user);
         setAccessToken(response, accessTokenResponseDto);
-        RefreshTokenResponseDto refreshTokenResponseDto = getRefreshToken(jwtProvider,user);
+        RefreshTokenResponseDto refreshTokenResponseDto = getRefreshToken(jwtProvider, user);
         setRefreshToken(response, refreshTokenResponseDto);
         upsertRefreshToken(user, refreshTokenResponseDto);
 
-        return setSignInInfo(accessTokenResponseDto, refreshTokenResponseDto, userPermission);
+        return setSignInInfo(accessTokenResponseDto, refreshTokenResponseDto, userPermission, authMethod);
     }
 
 
@@ -203,20 +208,25 @@ public class AuthServiceImplement implements AuthService {
         User user;
         if (userCount != 0) {
             user = userRepository.findByUserIdAndIsValidFalse(nativeSignUpRequestDto.getUserId());
-            if(user == null){
+            if (user == null) {
                 throw new CustomException(ResponseCode.DUPLICATE_RESOURCE);
             }
-            updateUser(nativeSignUpRequestDto, user);
+            updateUser(user);
             user.updateUserValid(true);
             userRepository.save(user);
 
             NativeAuth nativeAuth = nativeAuthRepository.findById(user.getUserIdx())
                     .orElseThrow(() -> new CustomException(ResponseCode.CONFLICT));
-            nativeAuth.changePassword(passwordEncoder.encode(nativeSignUpRequestDto.getPassword()));
+            nativeAuth.updateInfo(
+                    passwordEncoder.encode(nativeSignUpRequestDto.getPassword()),
+                    nativeSignUpRequestDto.getUserName(),
+                    nativeSignUpRequestDto.getPhoneNumber(),
+                    nativeSignUpRequestDto.getEmail()
+            );
             nativeAuthRepository.save(nativeAuth);
 
             Address address = addressRepository.findByUserIdxAndIsMainTrue(user.getUserIdx());
-            if(address == null){
+            if (address == null) {
                 throw new CustomException(ResponseCode.CONFLICT);
             }
             updateAddress(nativeSignUpRequestDto, address);
@@ -229,6 +239,9 @@ public class AuthServiceImplement implements AuthService {
             NativeAuth nativeAuth = NativeAuth.builder()
                     .userIdx(user.getUserIdx())
                     .password(passwordEncoder.encode(nativeSignUpRequestDto.getPassword()))
+                    .userName(nativeSignUpRequestDto.getUserName())
+                    .phoneNumber(nativeSignUpRequestDto.getPhoneNumber())
+                    .email(nativeSignUpRequestDto.getEmail())
                     .build();
             nativeAuthRepository.save(nativeAuth);
 
@@ -236,14 +249,15 @@ public class AuthServiceImplement implements AuthService {
             addressRepository.save(address);
         }
         String userPermission = getPermission(user.getUserPermissionsCode());
+        String authMethod = getAuthMethod(user.getAuthMethodCode());
 
-        AccessTokenResponseDto accessTokenResponseDto = getAccessToken(jwtProvider,user);
+        AccessTokenResponseDto accessTokenResponseDto = getAccessToken(jwtProvider, user);
         setAccessToken(response, accessTokenResponseDto);
-        RefreshTokenResponseDto refreshTokenResponseDto = getRefreshToken(jwtProvider,user);
+        RefreshTokenResponseDto refreshTokenResponseDto = getRefreshToken(jwtProvider, user);
         setRefreshToken(response, refreshTokenResponseDto);
         upsertRefreshToken(user, refreshTokenResponseDto);
 
-        return setSignInInfo(accessTokenResponseDto, refreshTokenResponseDto, userPermission);
+        return setSignInInfo(accessTokenResponseDto, refreshTokenResponseDto, userPermission, authMethod);
     }
 
     @Override
@@ -275,8 +289,14 @@ public class AuthServiceImplement implements AuthService {
         setAccessToken(response, accessTokenResponseDto);
 
         String userPermission = getPermission(user.getUserPermissionsCode());
+        String authMethod = getAuthMethod(user.getAuthMethodCode());
 
-        return new RefreshAccessTokenResponseDto(accessTokenResponseDto.accessTokenExpiresAt(), userPermission);
+        return RefreshAccessTokenResponseDto
+                .builder()
+                .accessTokenExpiresAt(accessTokenResponseDto.accessTokenExpiresAt())
+                .userPermission(userPermission)
+                .authMethod(authMethod)
+                .build();
     }
 
     @Override

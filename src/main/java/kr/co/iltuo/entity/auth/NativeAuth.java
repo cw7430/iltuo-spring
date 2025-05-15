@@ -17,6 +17,22 @@ public class NativeAuth {
     @Column(name = "`password`", nullable = false, length = 65)
     private String password;
 
+    @Column(name = "`user_name`", nullable = false, length = 100)
+    private String userName;
+
+    @Column(name = "`phone_number`", nullable = false, length = 15)
+    private String phoneNumber;
+
+    @Column(name = "`email`", nullable = false, length = 100)
+    private String email;
+
+    public void updateInfo(String encodedPassword, String userName, String phoneNumber, String email ) {
+        this.password = encodedPassword;
+        this.userName = userName;
+        this.phoneNumber = phoneNumber;
+        this.email = email;
+    }
+
     public void changePassword(String encodedPassword) {
         this.password = encodedPassword;
     }

@@ -1,4 +1,12 @@
 package kr.co.iltuo.dto.response.auth;
 
-public record RefreshAccessTokenResponseDto(long accessTokenExpiresAt, String userPermission) {
+import lombok.*;
+
+@Getter
+@AllArgsConstructor
+@Builder
+public class RefreshAccessTokenResponseDto {
+    private long accessTokenExpiresAt;
+    private String userPermission;
+    private String authMethod;
 }
