@@ -1,4 +1,4 @@
-package kr.co.iltuo.service;
+package kr.co.iltuo.service.product;
 
 import kr.co.iltuo.dto.request.product.*;
 import kr.co.iltuo.dto.response.product.*;

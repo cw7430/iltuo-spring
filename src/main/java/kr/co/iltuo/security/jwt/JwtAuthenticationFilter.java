@@ -1,4 +1,4 @@
-package kr.co.iltuo.provider;
+package kr.co.iltuo.security.jwt;
 
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.*;

@@ -16,8 +16,17 @@ public class SocialUserView {
     @Column(name = "`user_idx`", nullable = false)
     private Long userIdx;
 
-    @Column(name = "`user_id`", unique = true, nullable = false, length = 25)
+    @Column(name = "`user_id`", unique = true, nullable = false, length = 300)
     private String userId;
+
+    @Column(name = "`user_name`", nullable = false, length = 100)
+    private String userName;
+
+    @Column(name = "`phone_number`", nullable = false, length = 100)
+    private String phoneNumber;
+
+    @Column(name = "`email`", nullable = false, length = 100)
+    private String email;
 
     @Column(name = "`register_date`", nullable = false)
     private Instant registerDate;
@@ -25,11 +34,8 @@ public class SocialUserView {
     @Column(name = "`user_permissions_code`", nullable = false, length = 6)
     private String userPermissionsCode;
 
-    @Column(name = "`auth_method_code`", nullable = false, length = 6)
-    private String authMethodCode;
-
-    @Column(name = "`auth_provider_code`", nullable = false, length = 6)
-    private String authProviderCode;
+    @Column(name = "`auth_provider`", nullable = false, length = 100)
+    private String authProvider;
 
     @Column(name = "`provider_user_id`", nullable = false, length = 100)
     private String providerUserId;

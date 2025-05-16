@@ -1,4 +1,4 @@
-package kr.co.iltuo.service;
+package kr.co.iltuo.service.auth;
 
 import jakarta.servlet.http.*;
 import kr.co.iltuo.dto.request.auth.*;

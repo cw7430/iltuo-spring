@@ -1,10 +1,10 @@
-package kr.co.iltuo.controller;
+package kr.co.iltuo.controller.product;
 
 import kr.co.iltuo.dto.request.product.*;
 import kr.co.iltuo.dto.response.ResponseDto;
 import kr.co.iltuo.dto.response.product.*;
 import kr.co.iltuo.entity.product.*;
-import kr.co.iltuo.service.ProductService;
+import kr.co.iltuo.service.product.ProductService;
 import lombok.*;
 import org.springframework.web.bind.annotation.*;
 

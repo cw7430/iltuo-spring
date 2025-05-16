@@ -1,4 +1,4 @@
-package kr.co.iltuo.service;
+package kr.co.iltuo.service.product;
 
 import kr.co.iltuo.common.code.ResponseCode;
 import kr.co.iltuo.common.exception.CustomException;

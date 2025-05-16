@@ -14,9 +14,18 @@ public class SocialAuth {
     @Column(name = "`user_idx`", nullable = false)
     private Long userIdx;
 
-    @Column(name = "`auth_provider_code`", nullable = false, length = 6)
-    private String authProviderCode;
+    @Column(name = "`auth_provider`", nullable = false, length = 100)
+    private String authProvider;
 
     @Column(name = "`provider_user_id`", nullable = false, length = 100)
     private String providerUserId;
+
+    @Column(name = "`user_name`", nullable = false, length = 100)
+    private String userName;
+
+    @Column(name = "`phone_number`", nullable = false, length = 100)
+    private String phoneNumber;
+
+    @Column(name = "`email`", nullable = false, length = 100)
+    private String email;
 }

@@ -16,7 +16,7 @@ public class NativeUserView {
     @Column(name = "`user_idx`", nullable = false)
     private Long userIdx;
 
-    @Column(name = "`user_id`", unique = true, nullable = false, length = 25)
+    @Column(name = "`user_id`", unique = true, nullable = false, length = 300)
     private String userId;
 
     @Column(name = "`password`", nullable = false, length = 65)
@@ -36,8 +36,5 @@ public class NativeUserView {
 
     @Column(name = "`user_permissions_code`", nullable = false, length = 6)
     private String userPermissionsCode;
-
-    @Column(name = "`auth_method_code`", nullable = false, length = 6)
-    private String authMethodCode;
 
 }

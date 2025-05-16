@@ -1,11 +1,11 @@
-package kr.co.iltuo.controller;
+package kr.co.iltuo.controller.auth;
 
 import jakarta.servlet.http.*;
 import jakarta.validation.Valid;
 import kr.co.iltuo.dto.request.auth.*;
 import kr.co.iltuo.dto.response.auth.*;
 import kr.co.iltuo.dto.response.ResponseDto;
-import kr.co.iltuo.service.AuthService;
+import kr.co.iltuo.service.auth.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
