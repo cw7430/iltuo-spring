@@ -78,7 +78,7 @@ public class Oauth2UserServiceImplement extends DefaultOAuth2UserService {
                 socialAuthRepository.save(socialAuth);
                 return newUser;
             });
-            
+
 
             return new CustomOAuth2User(userId);
         } catch (OAuth2AuthenticationException e) {
