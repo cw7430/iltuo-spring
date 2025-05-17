@@ -30,37 +30,22 @@ public class AuthServiceImplement implements AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtProvider jwtProvider;
 
-    private static RefreshToken insertRefreshToken(RefreshTokenResponseDto refreshTokenResponseDto, User user) {
-        Instant expiresAt = Instant.ofEpochMilli(refreshTokenResponseDto.refreshTokenExpiresAt());
-        return RefreshToken.builder()
-                .userIdx(user.getUserIdx())
-                .token(refreshTokenResponseDto.refreshToken())
-                .expiresAt(expiresAt)
-                .build();
-    }
-
-    private static void updateRefreshToken(RefreshTokenResponseDto refreshTokenResponseDto, RefreshToken refreshToken) {
-        Instant expiresAt = Instant.ofEpochMilli(refreshTokenResponseDto.refreshTokenExpiresAt());
-        refreshToken.updateRefreshToken(refreshTokenResponseDto.refreshToken(), expiresAt);
-    }
 
     private void upsertRefreshToken(User user, RefreshTokenResponseDto refreshTokenResponseDto) {
         RefreshToken refreshToken = refreshTokenRepository.findById(user.getUserIdx())
                 .map(existingToken -> {
-                    updateRefreshToken(refreshTokenResponseDto, existingToken);
+                    AuthEntityUtil.updateRefreshToken(refreshTokenResponseDto, existingToken);
                     return existingToken;
                 })
-                .orElseGet(() -> insertRefreshToken(refreshTokenResponseDto, user));
+                .orElseGet(() -> AuthEntityUtil.insertRefreshToken(refreshTokenResponseDto, user));
         refreshTokenRepository.save(refreshToken);
     }
 
     @Override
     @Transactional
     public SignInResponseDto signInNative(HttpServletResponse response, NativeSignInRequestDto nativeSignInRequestDto) {
-        User user = userRepository.findByUserId(nativeSignInRequestDto.getUserId());
-        if (user == null || !user.isValid()) {
-            throw new CustomException(ResponseCode.LOGIN_ERROR);
-        }
+        User user = userRepository.findByUserId(nativeSignInRequestDto.getUserId())
+                .orElseThrow(() -> new CustomException(ResponseCode.LOGIN_ERROR));
 
         NativeAuth nativeAuth = nativeAuthRepository.findById(user.getUserIdx())
                 .orElseThrow(() -> new CustomException(ResponseCode.LOGIN_ERROR));
@@ -97,12 +82,10 @@ public class AuthServiceImplement implements AuthService {
         int userCount = userRepository.countByUserId(nativeSignUpRequestDto.getUserId());
         User user;
         if (userCount != 0) {
-            user = userRepository.findByUserIdAndIsValidFalse(nativeSignUpRequestDto.getUserId());
-            if (user == null) {
-                throw new CustomException(ResponseCode.DUPLICATE_RESOURCE);
-            }
+            user = userRepository.findByUserIdAndIsValidFalse(nativeSignUpRequestDto.getUserId())
+                    .orElseThrow(() -> new CustomException(ResponseCode.DUPLICATE_RESOURCE));
             AuthEntityUtil.updateUser(user);
-            AuthEntityUtil.updateUserValid(user,true);
+            AuthEntityUtil.updateUserValid(user, true);
             userRepository.save(user);
 
             NativeAuth nativeAuth = nativeAuthRepository.findById(user.getUserIdx())
@@ -110,15 +93,13 @@ public class AuthServiceImplement implements AuthService {
             AuthEntityUtil.updateNativeAuth(nativeAuth, passwordEncoder, nativeSignUpRequestDto);
             nativeAuthRepository.save(nativeAuth);
 
-            Address address = addressRepository.findByUserIdxAndIsMainTrue(user.getUserIdx());
-            if (address == null) {
-                throw new CustomException(ResponseCode.CONFLICT);
-            }
+            Address address = addressRepository.findByUserIdxAndIsMainTrue(user.getUserIdx())
+                    .orElseThrow(() -> new CustomException(ResponseCode.CONFLICT));
             AuthEntityUtil.updateAddress(nativeSignUpRequestDto, address, true);
             addressRepository.save(address);
 
         } else {
-            user = AuthEntityUtil.insertUser(nativeSignUpRequestDto, "NATIVE");
+            user = AuthEntityUtil.insertUser(nativeSignUpRequestDto.getUserId(), "NATIVE");
             userRepository.save(user);
 
             NativeAuth nativeAuth = AuthEntityUtil.insertNativeAuth(user, passwordEncoder, nativeSignUpRequestDto);
@@ -148,10 +129,8 @@ public class AuthServiceImplement implements AuthService {
         }
 
         String userId = jwtProvider.getUserIdFromRefreshToken(refreshToken);
-        User user = userRepository.findByUserId(userId);
-        if (user == null || !user.isValid()) {
-            throw new CustomException(ResponseCode.RESOURCE_NOT_FOUND);
-        }
+        User user = userRepository.findByUserId(userId)
+                .orElseThrow(() -> new CustomException(ResponseCode.RESOURCE_NOT_FOUND));
 
         RefreshToken savedToken = refreshTokenRepository.findById(user.getUserIdx())
                 .orElseThrow(() -> new CustomException(ResponseCode.UNAUTHORIZED));
@@ -184,11 +163,10 @@ public class AuthServiceImplement implements AuthService {
 
         if (StringUtils.hasText(refreshToken) && jwtProvider.validateRefreshToken(refreshToken)) {
             String userId = jwtProvider.getUserIdFromRefreshToken(refreshToken);
-            User user = userRepository.findByUserId(userId);
+            User user = userRepository.findByUserId(userId)
+                    .orElseThrow(() -> new CustomException(ResponseCode.RESOURCE_NOT_FOUND));
 
-            if (user != null) {
-                refreshTokenRepository.deleteById(user.getUserIdx());
-            }
+            refreshTokenRepository.deleteById(user.getUserIdx());
         }
 
         CookieUtil.removeCookie(response, "accessToken");

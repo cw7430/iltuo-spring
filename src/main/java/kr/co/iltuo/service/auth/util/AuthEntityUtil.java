@@ -9,10 +9,10 @@ import java.time.Instant;
 
 public class AuthEntityUtil {
 
-    public static User insertUser(NativeSignUpRequestDto nativeSignUpRequestDto, String authMethod) {
+    public static User insertUser(String userId, String authMethod) {
         String authMethodCode = AuthConvertUtil.convertAuthMethodToCode(authMethod);
         return User.builder()
-                .userId(nativeSignUpRequestDto.getUserId())
+                .userId(userId)
                 .authMethodCode(authMethodCode)
                 .registerDate(Instant.now())
                 .build();
@@ -51,6 +51,19 @@ public class AuthEntityUtil {
         );
     }
 
+    public static SocialAuth insertSocialAuth(
+            User user, String authProvider, String providerUserId, String userName, String phoneNumber, String email
+    ) {
+        return SocialAuth.builder()
+                .userIdx(user.getUserIdx())
+                .authProvider(authProvider)
+                .providerUserId(providerUserId)
+                .userName(userName)
+                .phoneNumber(phoneNumber)
+                .email(email)
+                .build();
+    }
+
     public static Address insertAddress(NativeSignUpRequestDto nativeSignUpRequestDto, User user, boolean isMain) {
         return Address.builder()
                 .userIdx(user.getUserIdx())
@@ -79,6 +92,20 @@ public class AuthEntityUtil {
                 .userPermission(userPermission)
                 .authMethod(authMethod)
                 .build();
+    }
+
+    public static RefreshToken insertRefreshToken(RefreshTokenResponseDto refreshTokenResponseDto, User user) {
+        Instant expiresAt = Instant.ofEpochMilli(refreshTokenResponseDto.refreshTokenExpiresAt());
+        return RefreshToken.builder()
+                .userIdx(user.getUserIdx())
+                .token(refreshTokenResponseDto.refreshToken())
+                .expiresAt(expiresAt)
+                .build();
+    }
+
+    public static void updateRefreshToken(RefreshTokenResponseDto refreshTokenResponseDto, RefreshToken refreshToken) {
+        Instant expiresAt = Instant.ofEpochMilli(refreshTokenResponseDto.refreshTokenExpiresAt());
+        refreshToken.updateRefreshToken(refreshTokenResponseDto.refreshToken(), expiresAt);
     }
 
 }
