@@ -4,6 +4,8 @@ import kr.co.iltuo.contants.auth.AuthEndpoint;
 import kr.co.iltuo.contants.product.ProductEndpoint;
 import kr.co.iltuo.security.jwt.JwtAuthenticationFilter;
 import kr.co.iltuo.security.jwt.JwtProvider;
+import kr.co.iltuo.security.oauth.OAuth2SuccessHandler;
+import kr.co.iltuo.service.auth.Oauth2UserServiceImplement;
 import lombok.*;
 import org.springframework.context.annotation.*;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -13,7 +15,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.*;
@@ -24,7 +25,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class WebSecurityConfig {
     private final JwtProvider jwtProvider;
-    private final DefaultOAuth2UserService defaultOAuth2UserService;
+    private final Oauth2UserServiceImplement oauth2UserService;
+    private final OAuth2SuccessHandler oAuth2SuccessHandler;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -47,8 +49,10 @@ public class WebSecurityConfig {
                         .anyRequest().authenticated()
                 )
                 .oauth2Login(oauth2 -> oauth2
+                        .authorizationEndpoint(endPoint -> endPoint.baseUri(AuthEndpoint.Oauth2.getPath()))
                         .redirectionEndpoint(endPoint -> endPoint.baseUri(AuthEndpoint.Oauth2.getPath() + "callback/*"))
-                        .userInfoEndpoint(endPoint -> endPoint.userService(defaultOAuth2UserService))
+                        .userInfoEndpoint(endPoint -> endPoint.userService(oauth2UserService))
+                        .successHandler(oAuth2SuccessHandler)
                 )
                 .addFilterBefore(new JwtAuthenticationFilter(jwtProvider), UsernamePasswordAuthenticationFilter.class)
                 .build();

@@ -4,13 +4,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import kr.co.iltuo.common.code.ResponseCode;
 import kr.co.iltuo.common.exception.CustomException;
-import kr.co.iltuo.dto.response.auth.*;
 import kr.co.iltuo.entity.auth.*;
 import kr.co.iltuo.repository.auth.*;
-import kr.co.iltuo.security.jwt.JwtProvider;
 import kr.co.iltuo.security.oauth.CustomOAuth2User;
 import kr.co.iltuo.service.auth.util.*;
-import kr.co.iltuo.service.global.util.CookieUtil;
 import org.springframework.security.oauth2.client.userinfo.*;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
@@ -25,18 +22,6 @@ public class Oauth2UserServiceImplement extends DefaultOAuth2UserService {
 
     private final UserRepository userRepository;
     private final SocialAuthRepository socialAuthRepository;
-    private final RefreshTokenRepository refreshTokenRepository;
-    private final JwtProvider jwtProvider;
-
-    private void upsertRefreshToken(User user, RefreshTokenResponseDto refreshTokenResponseDto) {
-        RefreshToken refreshToken = refreshTokenRepository.findById(user.getUserIdx())
-                .map(existingToken -> {
-                    AuthEntityUtil.updateRefreshToken(refreshTokenResponseDto, existingToken);
-                    return existingToken;
-                })
-                .orElseGet(() -> AuthEntityUtil.insertRefreshToken(refreshTokenResponseDto, user));
-        refreshTokenRepository.save(refreshToken);
-    }
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest request) {
@@ -79,8 +64,7 @@ public class Oauth2UserServiceImplement extends DefaultOAuth2UserService {
                 return newUser;
             });
 
-
-            return new CustomOAuth2User(userId);
+            return new CustomOAuth2User(user);
         } catch (OAuth2AuthenticationException e) {
             throw new CustomException(ResponseCode.OAUTH2_AUTHENTICATION_FAILED);
         } catch (JsonProcessingException e) {

@@ -1,21 +1,20 @@
 package kr.co.iltuo.security.oauth;
 
+import kr.co.iltuo.entity.auth.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
 import java.util.*;
 
-@NoArgsConstructor
-@AllArgsConstructor
+@Getter
+@RequiredArgsConstructor
 public class CustomOAuth2User implements OAuth2User {
 
-    private String userId;
+    private final User user;
 
     @Override
-    public Map<String, Object> getAttributes() {
-        return null;
-    }
+    public Map<String, Object> getAttributes() { return null; }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -24,6 +23,6 @@ public class CustomOAuth2User implements OAuth2User {
 
     @Override
     public String getName() {
-        return this.userId;
+        return user.getUserId();
     }
 }

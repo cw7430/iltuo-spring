@@ -11,7 +11,7 @@ public enum AuthEndpoint {
     CHECK_ID(EndPoint.BASE  + "/auth/check_id", "아이디 중복체크", "POST"),
     REFRESH_TOKEN(EndPoint.BASE  + "/auth/refresh_Token", "토큰 재발급", "POST"),
     LOG_OUT(EndPoint.BASE + "/auth/logout", "로그아웃", "POST"),
-    Oauth2(EndPoint.BASE + "/auth/social/**", "소셜로그인 콜백", "POST");
+    Oauth2(EndPoint.BASE + "/auth/social/**", "소셜로그인", "POST");
 
     private final String path;
     private final String description;
