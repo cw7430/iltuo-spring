@@ -23,9 +23,9 @@ public class SocialAuth {
     @Column(name = "`user_name`", nullable = false, length = 100)
     private String userName;
 
-    @Column(name = "`phone_number`", nullable = false, length = 100)
+    @Column(name = "`phone_number`", length = 100)
     private String phoneNumber;
 
-    @Column(name = "`email`", nullable = false, length = 100)
+    @Column(name = "`email`", length = 100)
     private String email;
 }

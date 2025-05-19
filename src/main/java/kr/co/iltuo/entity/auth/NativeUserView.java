@@ -13,28 +13,28 @@ import java.time.*;
 @Immutable
 public class NativeUserView {
     @Id
-    @Column(name = "`user_idx`", nullable = false)
+    @Column(name = "`user_idx`")
     private Long userIdx;
 
-    @Column(name = "`user_id`", unique = true, nullable = false, length = 300)
+    @Column(name = "`user_id`")
     private String userId;
 
-    @Column(name = "`password`", nullable = false, length = 65)
+    @Column(name = "`password`")
     private String password;
 
-    @Column(name = "`user_name`", nullable = false, length = 100)
+    @Column(name = "`user_name`")
     private String userName;
 
-    @Column(name = "`phone_number`", nullable = false, length = 15)
+    @Column(name = "`phone_number`")
     private String phoneNumber;
 
-    @Column(name = "`email`", nullable = false, length = 100)
+    @Column(name = "`email`")
     private String email;
 
-    @Column(name = "`register_date`", nullable = false)
+    @Column(name = "`register_date`")
     private Instant registerDate;
 
-    @Column(name = "`user_permissions_code`", nullable = false, length = 6)
+    @Column(name = "`user_permissions_code`")
     private String userPermissionsCode;
 
 }

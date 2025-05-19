@@ -11,19 +11,19 @@ import org.hibernate.annotations.Immutable;
 @Immutable
 public class CartView {
     @Id
-    @Column(name = "`cart_id`", nullable = false)
+    @Column(name = "`cart_id`")
     private Long cartId;
 
-    @Column(name = "`product_id`", nullable = false)
+    @Column(name = "`product_id`")
     private Long productId;
 
-    @Column(name = "`product_name`", nullable = false, length = 100)
+    @Column(name = "`product_name`")
     private String productName;
 
-    @Column(name = "`user_idx`", nullable = false)
+    @Column(name = "`user_idx`")
     private Long userIdx;
 
-    @Column(name = "`price`", nullable = false)
+    @Column(name = "`price`")
     private long price;
 
 

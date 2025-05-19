@@ -13,30 +13,30 @@ import java.time.*;
 @Immutable
 public class SocialUserView {
     @Id
-    @Column(name = "`user_idx`", nullable = false)
+    @Column(name = "`user_idx`")
     private Long userIdx;
 
-    @Column(name = "`user_id`", unique = true, nullable = false, length = 300)
+    @Column(name = "`user_id`")
     private String userId;
 
-    @Column(name = "`user_name`", nullable = false, length = 100)
+    @Column(name = "`user_name`")
     private String userName;
 
-    @Column(name = "`phone_number`", nullable = false, length = 100)
+    @Column(name = "`phone_number`")
     private String phoneNumber;
 
-    @Column(name = "`email`", nullable = false, length = 100)
+    @Column(name = "`email`")
     private String email;
 
-    @Column(name = "`register_date`", nullable = false)
+    @Column(name = "`register_date`")
     private Instant registerDate;
 
-    @Column(name = "`user_permissions_code`", nullable = false, length = 6)
+    @Column(name = "`user_permissions_code`")
     private String userPermissionsCode;
 
-    @Column(name = "`auth_provider`", nullable = false, length = 100)
+    @Column(name = "`auth_provider`")
     private String authProvider;
 
-    @Column(name = "`provider_user_id`", nullable = false, length = 100)
+    @Column(name = "`provider_user_id`")
     private String providerUserId;
 }

@@ -38,7 +38,7 @@ public class WebSecurityConfig {
                         .requestMatchers(
                                 "/",
                                 AuthEndpoint.SIGN_IN_NATIVE.getPath(), AuthEndpoint.SIGN_UP_NATIVE.getPath(), AuthEndpoint.CHECK_ID.getPath(),
-                                AuthEndpoint.REFRESH_TOKEN.getPath(), AuthEndpoint.LOG_OUT.getPath(), AuthEndpoint.Oauth2.getPath(),
+                                AuthEndpoint.REFRESH_TOKEN.getPath(), AuthEndpoint.LOG_OUT.getPath(), AuthEndpoint.Oauth2.getPath() + "/**",
                                 ProductEndpoint.MAJOR_CATEGORY_LIST.getPath(), ProductEndpoint.RECOMMENDED_PRODUCT_LIST.getPath(),
                                 ProductEndpoint.MAJOR_CATEGORY.getPath(), ProductEndpoint.MINER_CATEGORY_LIST.getPath(),
                                 ProductEndpoint.PRODUCT_LIST.getPath(), ProductEndpoint.PRODUCT_DETAIL.getPath(),
@@ -50,7 +50,7 @@ public class WebSecurityConfig {
                 )
                 .oauth2Login(oauth2 -> oauth2
                         .authorizationEndpoint(endPoint -> endPoint.baseUri(AuthEndpoint.Oauth2.getPath()))
-                        .redirectionEndpoint(endPoint -> endPoint.baseUri(AuthEndpoint.Oauth2.getPath() + "callback/*"))
+                        .redirectionEndpoint(endPoint -> endPoint.baseUri(AuthEndpoint.Oauth2.getPath() + "/callback/*"))
                         .userInfoEndpoint(endPoint -> endPoint.userService(oauth2UserService))
                         .successHandler(oAuth2SuccessHandler)
                 )

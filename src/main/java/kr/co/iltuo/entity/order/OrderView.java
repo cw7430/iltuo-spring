@@ -11,21 +11,21 @@ import org.hibernate.annotations.Immutable;
 @Immutable
 public class OrderView {
     @Id
-    @Column(name = "`order_id`", nullable = false)
+    @Column(name = "`order_id`")
     private Long orderId;
 
-    @Column(name = "`product_id`", nullable = false)
+    @Column(name = "`product_id`")
     private Long productId;
 
-    @Column(name = "`product_name`", nullable = false, length = 100)
+    @Column(name = "`product_name`")
     private String productName;
 
-    @Column(name = "`payment_id`", nullable = false)
+    @Column(name = "`payment_id`")
     private Long paymentId;
 
-    @Column(name = "`price`", nullable = false)
+    @Column(name = "`price`")
     private long price;
 
-    @Column(name = "`quantity`", nullable = false)
+    @Column(name = "`quantity`")
     private int quantity;
 }

@@ -1,7 +1,6 @@
 package kr.co.iltuo.service.auth;
 
 import jakarta.servlet.http.*;
-import jakarta.transaction.Transactional;
 import kr.co.iltuo.common.code.ResponseCode;
 import kr.co.iltuo.common.exception.CustomException;
 import kr.co.iltuo.dto.request.auth.*;
@@ -15,6 +14,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import kr.co.iltuo.dto.response.auth.*;
 import lombok.*;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.time.*;
@@ -27,6 +27,8 @@ public class AuthServiceImplement implements AuthService {
     private final NativeAuthRepository nativeAuthRepository;
     private final AddressRepository addressRepository;
     private final RefreshTokenRepository refreshTokenRepository;
+    private final NativeUserViewRepository nativeUserViewRepository;
+    private final SocialUserViewRepository socialUserViewRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtProvider jwtProvider;
 
@@ -171,6 +173,28 @@ public class AuthServiceImplement implements AuthService {
 
         CookieUtil.removeCookie(response, "accessToken");
         CookieUtil.removeCookie(response, "refreshToken");
+    }
+
+    @Override
+    public NativeUserView getNativeProfile(HttpServletRequest request) {
+        String token = jwtProvider.extractAccessTokenFromCookie(request);
+        if (!StringUtils.hasText(token) || !jwtProvider.validateAccessToken(token)) {
+            throw new CustomException(ResponseCode.UNAUTHORIZED);
+        }
+        String userId = jwtProvider.getUserIdFromAccessToken(token);
+        return nativeUserViewRepository.findByUserId(userId)
+                .orElseThrow(() -> new CustomException(ResponseCode.RESOURCE_NOT_FOUND));
+    }
+
+    @Override
+    public SocialUserView getSocialProfile(HttpServletRequest request) {
+        String token = jwtProvider.extractAccessTokenFromCookie(request);
+        if (!StringUtils.hasText(token) || !jwtProvider.validateAccessToken(token)) {
+            throw new CustomException(ResponseCode.UNAUTHORIZED);
+        }
+        String userId = jwtProvider.getUserIdFromAccessToken(token);
+        return socialUserViewRepository.findByUserId(userId)
+                .orElseThrow(() -> new CustomException(ResponseCode.RESOURCE_NOT_FOUND));
     }
 
 }
