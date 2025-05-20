@@ -4,12 +4,14 @@ import jakarta.servlet.http.*;
 import kr.co.iltuo.common.code.ResponseCode;
 import kr.co.iltuo.common.exception.CustomException;
 import kr.co.iltuo.dto.request.auth.*;
+import kr.co.iltuo.dto.response.PlainResponseDto;
 import kr.co.iltuo.entity.auth.*;
 import kr.co.iltuo.security.jwt.JwtProvider;
 import kr.co.iltuo.repository.auth.*;
 
 import kr.co.iltuo.service.auth.util.*;
 import kr.co.iltuo.service.global.util.*;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import kr.co.iltuo.dto.response.auth.*;
@@ -18,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.time.*;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -70,12 +73,12 @@ public class AuthServiceImplement implements AuthService {
 
 
     @Override
-    public UserIdDuplicateCheckResponseDto idDuplicateCheck(UserIdDuplicateCheckRequestDto userIdDuplicateCheckRequestDto) {
+    public PlainResponseDto idDuplicateCheck(UserIdDuplicateCheckRequestDto userIdDuplicateCheckRequestDto) {
         int count = userRepository.countByUserIdAndIsValidTrue(userIdDuplicateCheckRequestDto.getUserId());
         if (count != 0) {
             throw new CustomException(ResponseCode.DUPLICATE_RESOURCE);
         }
-        return new UserIdDuplicateCheckResponseDto(true);
+        return new PlainResponseDto(true);
     }
 
     @Override
@@ -95,20 +98,12 @@ public class AuthServiceImplement implements AuthService {
             AuthEntityUtil.updateNativeAuth(nativeAuth, passwordEncoder, nativeSignUpRequestDto);
             nativeAuthRepository.save(nativeAuth);
 
-            Address address = addressRepository.findByUserIdxAndIsMainTrue(user.getUserIdx())
-                    .orElseThrow(() -> new CustomException(ResponseCode.CONFLICT));
-            AuthEntityUtil.updateAddress(nativeSignUpRequestDto, address, true);
-            addressRepository.save(address);
-
         } else {
             user = AuthEntityUtil.insertUser(nativeSignUpRequestDto.getUserId(), "NATIVE");
             userRepository.save(user);
 
             NativeAuth nativeAuth = AuthEntityUtil.insertNativeAuth(user, passwordEncoder, nativeSignUpRequestDto);
             nativeAuthRepository.save(nativeAuth);
-
-            Address address = AuthEntityUtil.insertAddress(nativeSignUpRequestDto, user, true);
-            addressRepository.save(address);
         }
         String userPermission = AuthConvertUtil.convertPermission(user.getUserPermissionsCode());
         String authMethod = AuthConvertUtil.convertAuthMethodToString(user.getAuthMethodCode());
@@ -195,6 +190,44 @@ public class AuthServiceImplement implements AuthService {
         String userId = jwtProvider.getUserIdFromAccessToken(token);
         return socialUserViewRepository.findByUserId(userId)
                 .orElseThrow(() -> new CustomException(ResponseCode.RESOURCE_NOT_FOUND));
+    }
+
+    @Override
+    public List<Address> getUserAddressList(HttpServletRequest request) {
+        String token = jwtProvider.extractAccessTokenFromCookie(request);
+        if (!StringUtils.hasText(token) || !jwtProvider.validateAccessToken(token)) {
+            throw new CustomException(ResponseCode.UNAUTHORIZED);
+        }
+        String userId = jwtProvider.getUserIdFromAccessToken(token);
+        User user = userRepository.findByUserId(userId)
+                .orElseThrow(() -> new CustomException(ResponseCode.RESOURCE_NOT_FOUND));
+        Sort sort = Sort.by(Sort.Direction.DESC, "isMain");
+        return addressRepository.findByUserIdxAndIsValidTrue(user.getUserIdx(), sort);
+    }
+
+    @Override
+    @Transactional
+    public PlainResponseDto addAddress(HttpServletRequest request, AddressRequestDto addressRequestDto) {
+        String token = jwtProvider.extractAccessTokenFromCookie(request);
+        if (!StringUtils.hasText(token) || !jwtProvider.validateAccessToken(token)) {
+            throw new CustomException(ResponseCode.UNAUTHORIZED);
+        }
+        String userId = jwtProvider.getUserIdFromAccessToken(token);
+        User user = userRepository.findByUserId(userId)
+                .orElseThrow(() -> new CustomException(ResponseCode.RESOURCE_NOT_FOUND));
+
+        if (addressRequestDto.isMain()) {
+            addressRepository.findByUserIdxAndIsMainTrue(user.getUserIdx())
+                .ifPresent(existingMainAddress -> {
+                    existingMainAddress.updateMainAddress(false);
+                    addressRepository.save(existingMainAddress);
+            });
+        }
+
+        Address address = AuthEntityUtil.insertAddress(addressRequestDto, user);
+        addressRepository.save(address);
+
+        return new PlainResponseDto(true);
     }
 
 }

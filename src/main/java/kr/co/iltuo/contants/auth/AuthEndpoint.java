@@ -9,9 +9,13 @@ public enum AuthEndpoint {
     SIGN_IN_NATIVE(EndPoint.BASE + "/auth/sign_in_native", "로그인", "POST"),
     SIGN_UP_NATIVE(EndPoint.BASE + "/auth/sign_up_native", "회원가입", "POST"),
     CHECK_ID(EndPoint.BASE  + "/auth/check_id", "아이디 중복체크", "POST"),
-    REFRESH_TOKEN(EndPoint.BASE  + "/auth/refresh_Token", "토큰 재발급", "POST"),
-    LOG_OUT(EndPoint.BASE + "/auth/logout", "로그아웃", "POST"),
-    Oauth2(EndPoint.BASE + "/auth/social", "소셜로그인", "POST");
+    REFRESH_TOKEN(EndPoint.BASE  + "/auth/refresh_Token", "토큰 재발급", "GET"),
+    LOG_OUT(EndPoint.BASE + "/auth/logout", "로그아웃", "GET"),
+    Oauth2(EndPoint.BASE + "/auth/social", "소셜로그인", "POST"),
+    NATIVE_PROFILE(EndPoint.BASE + "/auth/native_profile", "내부 회원", "GET"),
+    SOCIAL_PROFILE(EndPoint.BASE + "/auth/social_profile", "소셜 회원", "GET"),
+    ADDRESS_LIST(EndPoint.BASE + "/auth/address_list", "주소목록", "GET"),
+    ADD_ADDRESS(EndPoint.BASE + "/auth/add_address", "주소등록", "POST");
 
     private final String path;
     private final String description;

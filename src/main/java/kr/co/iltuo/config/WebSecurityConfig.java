@@ -44,7 +44,10 @@ public class WebSecurityConfig {
                                 ProductEndpoint.PRODUCT_LIST.getPath(), ProductEndpoint.PRODUCT_DETAIL.getPath(),
                                 ProductEndpoint.OPTION_LIST.getPath(), ProductEndpoint.OPTION_DETAIL_LIST.getPath()
                         ).permitAll()
-                        .requestMatchers("/user/**").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers(
+                                AuthEndpoint.NATIVE_PROFILE.getPath(), AuthEndpoint.SOCIAL_PROFILE.getPath(), AuthEndpoint.ADDRESS_LIST.getPath(),
+                                AuthEndpoint.ADD_ADDRESS.getPath()
+                        ).hasAnyRole("USER", "ADMIN")
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )

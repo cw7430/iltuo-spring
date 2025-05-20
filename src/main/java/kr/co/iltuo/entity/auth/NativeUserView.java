@@ -19,9 +19,6 @@ public class NativeUserView {
     @Column(name = "`user_id`")
     private String userId;
 
-    @Column(name = "`password`")
-    private String password;
-
     @Column(name = "`user_name`")
     private String userName;
 

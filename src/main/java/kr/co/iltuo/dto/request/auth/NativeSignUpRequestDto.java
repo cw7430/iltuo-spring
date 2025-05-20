@@ -37,14 +37,4 @@ public class NativeSignUpRequestDto {
     @NotBlank(message = "이메일을 입력해주세요.")
     @Email(message = "이메일 형식이 올바르지 않습니다.")
     private String email;
-
-    @NotBlank(message = "우편번호를 입력해주세요.")
-    private String postalCode;
-
-    @NotBlank(message = "주소를 입력해주세요.")
-    private String defaultAddress;
-
-    private String detailAddress;
-
-    private String extraAddress;
 }

@@ -7,7 +7,7 @@ import org.hibernate.annotations.Immutable;
 import java.time.*;
 
 @Entity
-@Table(name = "`native_user_view`")
+@Table(name = "`social_user_view`")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Immutable

@@ -64,23 +64,23 @@ public class AuthEntityUtil {
                 .build();
     }
 
-    public static Address insertAddress(NativeSignUpRequestDto nativeSignUpRequestDto, User user, boolean isMain) {
+    public static Address insertAddress(AddressRequestDto addressRequestDto, User user) {
         return Address.builder()
                 .userIdx(user.getUserIdx())
-                .postalCode(nativeSignUpRequestDto.getPostalCode())
-                .defaultAddress(nativeSignUpRequestDto.getDefaultAddress())
-                .detailAddress(nativeSignUpRequestDto.getDetailAddress())
-                .extraAddress(nativeSignUpRequestDto.getExtraAddress())
-                .isMain(isMain)
+                .postalCode(addressRequestDto.getPostalCode())
+                .defaultAddress(addressRequestDto.getDefaultAddress())
+                .detailAddress(addressRequestDto.getDetailAddress())
+                .extraAddress(addressRequestDto.getExtraAddress())
+                .isMain(addressRequestDto.isMain())
                 .build();
     }
 
-    public static void updateAddress(NativeSignUpRequestDto nativeSignUpRequestDto, Address address, boolean isMain) {
+    public static void updateAddress(AddressRequestDto addressRequestDto, Address address, boolean isMain) {
         address.updateAddress(
-                nativeSignUpRequestDto.getPostalCode(),
-                nativeSignUpRequestDto.getDefaultAddress(),
-                nativeSignUpRequestDto.getDetailAddress(),
-                nativeSignUpRequestDto.getExtraAddress(),
+                addressRequestDto.getPostalCode(),
+                addressRequestDto.getDefaultAddress(),
+                addressRequestDto.getDetailAddress(),
+                addressRequestDto.getExtraAddress(),
                 isMain
         );
     }

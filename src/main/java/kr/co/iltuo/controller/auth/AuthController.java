@@ -4,10 +4,13 @@ import jakarta.servlet.http.*;
 import jakarta.validation.Valid;
 import kr.co.iltuo.dto.request.auth.*;
 import kr.co.iltuo.dto.response.auth.*;
-import kr.co.iltuo.dto.response.ResponseDto;
+import kr.co.iltuo.dto.response.*;
+import kr.co.iltuo.entity.auth.*;
 import kr.co.iltuo.service.auth.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -22,7 +25,7 @@ public class AuthController {
     }
 
     @PostMapping("/check_id")
-    public ResponseDto<UserIdDuplicateCheckResponseDto> idDuplicateCheck(@Valid @RequestBody UserIdDuplicateCheckRequestDto userIdDuplicateCheckRequestDto) {
+    public ResponseDto<PlainResponseDto> idDuplicateCheck(@Valid @RequestBody UserIdDuplicateCheckRequestDto userIdDuplicateCheckRequestDto) {
         return ResponseDto.success(authService.idDuplicateCheck(userIdDuplicateCheckRequestDto));
     }
 
@@ -40,5 +43,25 @@ public class AuthController {
     public ResponseDto<Void> logout(HttpServletRequest request, HttpServletResponse response) {
         authService.logout(request, response);
         return ResponseDto.success(null);
+    }
+
+    @GetMapping("/native_profile")
+    public ResponseDto<NativeUserView> getNativeProfile(HttpServletRequest request) {
+        return ResponseDto.success(authService.getNativeProfile(request));
+    }
+
+    @GetMapping("/social_profile")
+    public ResponseDto<SocialUserView> getSocialProfile(HttpServletRequest request) {
+        return ResponseDto.success(authService.getSocialProfile(request));
+    }
+
+    @GetMapping("/address_list")
+    public ResponseDto<List<Address>> getUserAddressList(HttpServletRequest request) {
+        return ResponseDto.success(authService.getUserAddressList(request));
+    }
+
+    @PostMapping("/add_address")
+    public ResponseDto<PlainResponseDto> addAddress(HttpServletRequest request, AddressRequestDto addressRequestDto) {
+        return ResponseDto.success(authService.addAddress(request, addressRequestDto));
     }
 }
