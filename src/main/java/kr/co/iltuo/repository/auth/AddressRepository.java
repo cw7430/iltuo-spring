@@ -7,6 +7,6 @@ import org.springframework.data.jpa.repository.*;
 import java.util.*;
 
 public interface AddressRepository extends JpaRepository<Address,Long> {
-    Optional<Address> findByUserIdxAndIsMainTrue(Long userIdx);
+    Optional<Address> findByUserIdxAndIsValidTrueAndIsMainTrue(Long userIdx);
     List<Address> findByUserIdxAndIsValidTrue(Long userIdx, Sort sort);
 }

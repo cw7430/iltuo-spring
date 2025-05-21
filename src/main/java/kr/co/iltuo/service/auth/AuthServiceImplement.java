@@ -3,6 +3,7 @@ package kr.co.iltuo.service.auth;
 import jakarta.servlet.http.*;
 import kr.co.iltuo.common.code.ResponseCode;
 import kr.co.iltuo.common.exception.CustomException;
+import kr.co.iltuo.dto.request.IdxSingleRequestDto;
 import kr.co.iltuo.dto.request.auth.*;
 import kr.co.iltuo.dto.response.PlainResponseDto;
 import kr.co.iltuo.entity.auth.*;
@@ -172,33 +173,21 @@ public class AuthServiceImplement implements AuthService {
 
     @Override
     public NativeUserView getNativeProfile(HttpServletRequest request) {
-        String token = jwtProvider.extractAccessTokenFromCookie(request);
-        if (!StringUtils.hasText(token) || !jwtProvider.validateAccessToken(token)) {
-            throw new CustomException(ResponseCode.UNAUTHORIZED);
-        }
-        String userId = jwtProvider.getUserIdFromAccessToken(token);
+        String userId = jwtProvider.extractUserIdFromRequest(request,"ACCESS");
         return nativeUserViewRepository.findByUserId(userId)
                 .orElseThrow(() -> new CustomException(ResponseCode.RESOURCE_NOT_FOUND));
     }
 
     @Override
     public SocialUserView getSocialProfile(HttpServletRequest request) {
-        String token = jwtProvider.extractAccessTokenFromCookie(request);
-        if (!StringUtils.hasText(token) || !jwtProvider.validateAccessToken(token)) {
-            throw new CustomException(ResponseCode.UNAUTHORIZED);
-        }
-        String userId = jwtProvider.getUserIdFromAccessToken(token);
+        String userId = jwtProvider.extractUserIdFromRequest(request,"ACCESS");
         return socialUserViewRepository.findByUserId(userId)
                 .orElseThrow(() -> new CustomException(ResponseCode.RESOURCE_NOT_FOUND));
     }
 
     @Override
     public List<Address> getUserAddressList(HttpServletRequest request) {
-        String token = jwtProvider.extractAccessTokenFromCookie(request);
-        if (!StringUtils.hasText(token) || !jwtProvider.validateAccessToken(token)) {
-            throw new CustomException(ResponseCode.UNAUTHORIZED);
-        }
-        String userId = jwtProvider.getUserIdFromAccessToken(token);
+        String userId = jwtProvider.extractUserIdFromRequest(request,"ACCESS");
         User user = userRepository.findByUserId(userId)
                 .orElseThrow(() -> new CustomException(ResponseCode.RESOURCE_NOT_FOUND));
         Sort sort = Sort.by(Sort.Direction.DESC, "isMain");
@@ -208,16 +197,12 @@ public class AuthServiceImplement implements AuthService {
     @Override
     @Transactional
     public PlainResponseDto addAddress(HttpServletRequest request, AddressRequestDto addressRequestDto) {
-        String token = jwtProvider.extractAccessTokenFromCookie(request);
-        if (!StringUtils.hasText(token) || !jwtProvider.validateAccessToken(token)) {
-            throw new CustomException(ResponseCode.UNAUTHORIZED);
-        }
-        String userId = jwtProvider.getUserIdFromAccessToken(token);
+        String userId = jwtProvider.extractUserIdFromRequest(request,"ACCESS");
         User user = userRepository.findByUserId(userId)
                 .orElseThrow(() -> new CustomException(ResponseCode.RESOURCE_NOT_FOUND));
 
         if (addressRequestDto.isMain()) {
-            addressRepository.findByUserIdxAndIsMainTrue(user.getUserIdx())
+            addressRepository.findByUserIdxAndIsValidTrueAndIsMainTrue(user.getUserIdx())
                 .ifPresent(existingMainAddress -> {
                     existingMainAddress.updateMainAddress(false);
                     addressRepository.save(existingMainAddress);
@@ -227,6 +212,23 @@ public class AuthServiceImplement implements AuthService {
         Address address = AuthEntityUtil.insertAddress(addressRequestDto, user);
         addressRepository.save(address);
 
+        return new PlainResponseDto(true);
+    }
+
+    @Override
+    @Transactional
+    public PlainResponseDto changeMainAddress(HttpServletRequest request, IdxSingleRequestDto idxSingleRequestDto) {
+        String userId = jwtProvider.extractUserIdFromRequest(request,"ACCESS");
+        User user = userRepository.findByUserId(userId)
+                .orElseThrow(() -> new CustomException(ResponseCode.RESOURCE_NOT_FOUND));
+        addressRepository.findByUserIdxAndIsValidTrueAndIsMainTrue(user.getUserIdx())
+            .ifPresent(existingMainAddress -> {
+                existingMainAddress.updateMainAddress(false);
+                addressRepository.save(existingMainAddress);
+        });
+        Address address = addressRepository.findById(idxSingleRequestDto.getIdx())
+                .orElseThrow(() -> new CustomException(ResponseCode.RESOURCE_NOT_FOUND));
+        address.updateMainAddress(true);
         return new PlainResponseDto(true);
     }
 

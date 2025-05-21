@@ -5,9 +5,12 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import kr.co.iltuo.common.code.ResponseCode;
+import kr.co.iltuo.common.exception.CustomException;
 import kr.co.iltuo.entity.auth.User;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import java.security.Key;
 import java.util.Date;
@@ -25,7 +28,7 @@ public class JwtProvider {
             @Value("${jwt.access.expiration}") long accessTokenExpireTime,
             @Value("${jwt.refresh.secret}") String refreshSecretKey,
             @Value("${jwt.refresh.expiration}") long refreshTokenExpireTime
-            ) {
+    ) {
         byte[] accessKeyBytes = Decoders.BASE64.decode(accessSecretKey);
         this.accessKey = Keys.hmacShaKeyFor(accessKeyBytes);
         this.accessTokenExpireTime = accessTokenExpireTime;
@@ -149,6 +152,24 @@ public class JwtProvider {
             }
         }
         return null;
+    }
+
+    public String extractUserIdFromRequest(HttpServletRequest request, String tokenType) {
+        String userId = null;
+        if ("ACCESS".equals(tokenType)) {
+            String token = extractAccessTokenFromCookie(request);
+            if (!StringUtils.hasText(token) || !validateAccessToken(token)) {
+                throw new CustomException(ResponseCode.UNAUTHORIZED);
+            }
+            userId = getUserIdFromAccessToken(token);
+        } else if ("REFRESH".equals(tokenType)) {
+            String token = extractRefreshTokenFromCookie(request);
+            if (!StringUtils.hasText(token) || !validateRefreshToken(token)) {
+                throw new CustomException(ResponseCode.UNAUTHORIZED);
+            }
+            userId = getUserIdFromRefreshToken(token);
+        }
+        return userId;
     }
 
 }

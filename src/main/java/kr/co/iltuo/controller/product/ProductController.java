@@ -1,6 +1,6 @@
 package kr.co.iltuo.controller.product;
 
-import kr.co.iltuo.dto.request.product.*;
+import kr.co.iltuo.dto.request.IdxSingleRequestDto;
 import kr.co.iltuo.dto.response.ResponseDto;
 import kr.co.iltuo.dto.response.product.*;
 import kr.co.iltuo.entity.product.*;
@@ -28,27 +28,27 @@ public class ProductController {
     }
 
     @GetMapping("/miner_category_list")
-    public ResponseDto<List<MinerCategory>> getMinerCategoryList(@ModelAttribute ProductListRequestDto productListRequestDto) {
-        return ResponseDto.success(productService.getMinerCategoryList(productListRequestDto));
+    public ResponseDto<List<MinerCategory>> getMinerCategoryList(@ModelAttribute IdxSingleRequestDto idxSingleRequestDto) {
+        return ResponseDto.success(productService.getMinerCategoryList(idxSingleRequestDto));
     }
 
     @GetMapping("/product_list")
-    public ResponseDto<List<ProductDataResponseDto>> getProductList(@ModelAttribute ProductListRequestDto productListRequestDto) {
-        return ResponseDto.success(productService.getProductList(productListRequestDto));
+    public ResponseDto<List<ProductDataResponseDto>> getProductList(@ModelAttribute IdxSingleRequestDto idxSingleRequestDto) {
+        return ResponseDto.success(productService.getProductList(idxSingleRequestDto));
     }
 
     @GetMapping("/product_detail")
-    public ResponseDto<ProductDataResponseDto> getProduct(@ModelAttribute ProductRequestDto productRequestDto) {
-        return ResponseDto.success(productService.getProduct(productRequestDto));
+    public ResponseDto<ProductDataResponseDto> getProduct(@ModelAttribute IdxSingleRequestDto idxSingleRequestDto) {
+        return ResponseDto.success(productService.getProduct(idxSingleRequestDto));
     }
 
     @GetMapping("/option_list")
-    public ResponseDto<List<Option>> getOptionList(@ModelAttribute ProductListRequestDto productListRequestDto) {
-        return ResponseDto.success(productService.getOptionList(productListRequestDto));
+    public ResponseDto<List<Option>> getOptionList(@ModelAttribute IdxSingleRequestDto idxSingleRequestDto) {
+        return ResponseDto.success(productService.getOptionList(idxSingleRequestDto));
     }
 
     @GetMapping("/option_detail_list")
-    public ResponseDto<List<OptionView>> getOptionDetailList(@ModelAttribute ProductListRequestDto productListRequestDto) {
-        return ResponseDto.success(productService.getOptionDetailList(productListRequestDto));
+    public ResponseDto<List<OptionView>> getOptionDetailList(@ModelAttribute IdxSingleRequestDto idxSingleRequestDto) {
+        return ResponseDto.success(productService.getOptionDetailList(idxSingleRequestDto));
     }
 }

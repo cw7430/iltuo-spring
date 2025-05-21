@@ -2,7 +2,7 @@ package kr.co.iltuo.service.product;
 
 import kr.co.iltuo.common.code.ResponseCode;
 import kr.co.iltuo.common.exception.CustomException;
-import kr.co.iltuo.dto.request.product.*;
+import kr.co.iltuo.dto.request.IdxSingleRequestDto;
 import kr.co.iltuo.dto.response.product.*;
 import kr.co.iltuo.entity.product.*;
 import kr.co.iltuo.repository.product.*;
@@ -65,31 +65,31 @@ public class ProductServiceImplement implements ProductService {
     }
 
     @Override
-    public List<MinerCategory> getMinerCategoryList(ProductListRequestDto productListRequestDto) {
-        return minerCategoryRepository.findByMajorCategoryIdAndIsValidTrue(productListRequestDto.getMajorCategoryId());
+    public List<MinerCategory> getMinerCategoryList(IdxSingleRequestDto idxSingleRequestDto) {
+        return minerCategoryRepository.findByMajorCategoryIdAndIsValidTrue(idxSingleRequestDto.getIdx());
     }
 
     @Override
-    public List<ProductDataResponseDto> getProductList(ProductListRequestDto productListRequestDto) {
-        List<ProductView> productList = productViewRepository.findByMajorCategoryId(productListRequestDto.getMajorCategoryId());
+    public List<ProductDataResponseDto> getProductList(IdxSingleRequestDto idxSingleRequestDto) {
+        List<ProductView> productList = productViewRepository.findByMajorCategoryId(idxSingleRequestDto.getIdx());
         return makeProductList(productList);
     }
 
     @Override
-    public ProductDataResponseDto getProduct(ProductRequestDto productRequestDto) {
-        ProductView product = productViewRepository.findById(productRequestDto.getProductId())
+    public ProductDataResponseDto getProduct(IdxSingleRequestDto idxSingleRequestDto) {
+        ProductView product = productViewRepository.findById(idxSingleRequestDto.getIdx())
                 .orElseThrow(() -> new CustomException(ResponseCode.CONFLICT));
         return makeProductData(product);
     }
 
     @Override
-    public List<Option> getOptionList(ProductListRequestDto productListRequestDto) {
-        return optionRepository.findByMajorCategoryIdAndIsValidTrue(productListRequestDto.getMajorCategoryId());
+    public List<Option> getOptionList(IdxSingleRequestDto idxSingleRequestDto) {
+        return optionRepository.findByMajorCategoryIdAndIsValidTrue(idxSingleRequestDto.getIdx());
     }
 
     @Override
-    public List<OptionView> getOptionDetailList(ProductListRequestDto productListRequestDto) {
-        return optionViewRepository.findByMajorCategoryId(productListRequestDto.getMajorCategoryId());
+    public List<OptionView> getOptionDetailList(IdxSingleRequestDto idxSingleRequestDto) {
+        return optionViewRepository.findByMajorCategoryId(idxSingleRequestDto.getIdx());
     }
 
 }

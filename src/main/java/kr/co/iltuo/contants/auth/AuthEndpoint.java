@@ -15,7 +15,8 @@ public enum AuthEndpoint {
     NATIVE_PROFILE(EndPoint.BASE + "/auth/native_profile", "내부 회원", "GET"),
     SOCIAL_PROFILE(EndPoint.BASE + "/auth/social_profile", "소셜 회원", "GET"),
     ADDRESS_LIST(EndPoint.BASE + "/auth/address_list", "주소목록", "GET"),
-    ADD_ADDRESS(EndPoint.BASE + "/auth/add_address", "주소등록", "POST");
+    ADD_ADDRESS(EndPoint.BASE + "/auth/add_address", "주소등록", "POST"),
+    CHANGE_MAIN_ADDRESS(EndPoint.BASE + "/auth/change_main_address", "메인 주소 수정", "POST");
 
     private final String path;
     private final String description;
