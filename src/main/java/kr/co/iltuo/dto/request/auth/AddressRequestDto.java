@@ -16,5 +16,5 @@ public class AddressRequestDto {
 
     private String extraAddress;
 
-    private boolean isMain;
+    private boolean main;
 }

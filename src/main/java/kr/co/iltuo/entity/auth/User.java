@@ -33,13 +33,13 @@ public class User {
 
     @Builder.Default
     @Column(name = "`is_valid`", nullable = false)
-    private boolean isValid = true;
+    private boolean valid = true;
 
     public void updateUser(Instant registerDate) {
         this.registerDate = registerDate;
     }
 
-    public void updateUserValid(boolean isValid) {
-        this.isValid = isValid;
+    public void updateUserValid(boolean valid) {
+        this.valid = valid;
     }
 }

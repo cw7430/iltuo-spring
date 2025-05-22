@@ -2,7 +2,7 @@ package kr.co.iltuo.controller.auth;
 
 import jakarta.servlet.http.*;
 import jakarta.validation.Valid;
-import kr.co.iltuo.dto.request.IdxSingleRequestDto;
+import kr.co.iltuo.dto.request.IdxRequestDto;
 import kr.co.iltuo.dto.request.auth.*;
 import kr.co.iltuo.dto.response.auth.*;
 import kr.co.iltuo.dto.response.*;
@@ -61,13 +61,28 @@ public class AuthController {
         return ResponseDto.success(authService.getUserAddressList(request));
     }
 
+    @PostMapping("/change_password")
+    public ResponseDto<PlainResponseDto> changePassword(HttpServletRequest request, @Valid @RequestBody PasswordRequestDto passwordRequestDto) {
+        return ResponseDto.success(authService.changePassword(request, passwordRequestDto));
+    }
+
+    @PostMapping("/change_profile")
+    public ResponseDto<PlainResponseDto> changeProfile(HttpServletRequest request, @Valid @RequestBody ProfileRequestDto profileRequestDto) {
+        return ResponseDto.success(authService.changeProfile(request, profileRequestDto));
+    }
+
     @PostMapping("/add_address")
     public ResponseDto<PlainResponseDto> addAddress(HttpServletRequest request, @Valid @RequestBody AddressRequestDto addressRequestDto) {
         return ResponseDto.success(authService.addAddress(request, addressRequestDto));
     }
 
     @PostMapping("/change_main_address")
-    public ResponseDto<PlainResponseDto> changeMainAddress(HttpServletRequest request, IdxSingleRequestDto idxSingleRequestDto) {
-        return ResponseDto.success(authService.changeMainAddress(request, idxSingleRequestDto));
+    public ResponseDto<PlainResponseDto> changeMainAddress(HttpServletRequest request, @RequestBody IdxRequestDto idxRequestDto) {
+        return ResponseDto.success(authService.changeMainAddress(request, idxRequestDto));
+    }
+
+    @PostMapping("/invalidate_addresses")
+    public ResponseDto<PlainResponseDto> invalidateAddresses(HttpServletRequest request, @RequestBody List<IdxRequestDto> idxRequests) {
+        return ResponseDto.success(authService.invalidateAddresses(request, idxRequests));
     }
 }

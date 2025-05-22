@@ -40,14 +40,25 @@ public class AuthEntityUtil {
                 .build();
     }
 
-    public static void updateNativeAuth(
+    public static void updateSignUpNativeAuth(
             NativeAuth nativeAuth, PasswordEncoder passwordEncoder, NativeSignUpRequestDto nativeSignUpRequestDto
     ) {
         nativeAuth.updateInfo(
-                passwordEncoder.encode(nativeSignUpRequestDto.getPassword()),
-                nativeSignUpRequestDto.getUserName(),
                 nativeSignUpRequestDto.getPhoneNumber(),
                 nativeSignUpRequestDto.getEmail()
+        );
+        nativeAuth.changeName(nativeSignUpRequestDto.getUserName());
+        nativeAuth.changePassword(
+                passwordEncoder.encode(nativeSignUpRequestDto.getPassword())
+        );
+    }
+
+    public static void updateChangeNativeAuth(
+            NativeAuth nativeAuth, ProfileRequestDto profileRequestDto
+    ) {
+        nativeAuth.updateInfo(
+                profileRequestDto.getPhoneNumber(),
+                profileRequestDto.getEmail()
         );
     }
 
@@ -71,18 +82,8 @@ public class AuthEntityUtil {
                 .defaultAddress(addressRequestDto.getDefaultAddress())
                 .detailAddress(addressRequestDto.getDetailAddress())
                 .extraAddress(addressRequestDto.getExtraAddress())
-                .isMain(addressRequestDto.isMain())
+                .main(addressRequestDto.isMain())
                 .build();
-    }
-
-    public static void updateAddress(AddressRequestDto addressRequestDto, Address address, boolean isMain) {
-        address.updateAddress(
-                addressRequestDto.getPostalCode(),
-                addressRequestDto.getDefaultAddress(),
-                addressRequestDto.getDetailAddress(),
-                addressRequestDto.getExtraAddress(),
-                isMain
-        );
     }
 
     public static SignInResponseDto insertSignInInfo(AccessTokenResponseDto accessTokenResponseDto, RefreshTokenResponseDto refreshTokenResponseDto, String userPermission, String authMethod) {

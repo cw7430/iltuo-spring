@@ -46,7 +46,8 @@ public class WebSecurityConfig {
                         ).permitAll()
                         .requestMatchers(
                                 AuthEndpoint.NATIVE_PROFILE.getPath(), AuthEndpoint.SOCIAL_PROFILE.getPath(), AuthEndpoint.ADDRESS_LIST.getPath(),
-                                AuthEndpoint.ADD_ADDRESS.getPath(), AuthEndpoint.CHANGE_MAIN_ADDRESS.getPath()
+                                AuthEndpoint.CHANGE_PASSWORD.getPath(), AuthEndpoint.CHANGE_PROFILE.getPath(), AuthEndpoint.ADD_ADDRESS.getPath(),
+                                AuthEndpoint.CHANGE_MAIN_ADDRESS.getPath(), AuthEndpoint.INVALIDATE_ADDRESSES.getPath()
                         ).hasAnyRole("USER", "ADMIN")
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()

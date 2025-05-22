@@ -41,7 +41,7 @@ public class ProductView {
     private long optionCount;
 
     @Column(name = "`is_recommended`")
-    private boolean isRecommended;
+    private boolean recommended;
 
     @Column(name = "`register_date`")
     private Instant registerDate;

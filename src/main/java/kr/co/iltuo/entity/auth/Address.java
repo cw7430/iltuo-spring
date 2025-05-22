@@ -31,25 +31,14 @@ public class Address {
     private String extraAddress;
 
     @Column(name = "`is_main`", nullable = false)
-    private boolean isMain;
+    private boolean main;
 
     @Builder.Default
     @Column(name = "`is_valid`", nullable = false)
-    private boolean isValid = true;
+    private boolean valid = true;
 
-    public void updateAddress(String postalCode, String defaultAddress, String detailAddress, String extraAddress, boolean isMain) {
-        this.postalCode = postalCode;
-        this.defaultAddress = defaultAddress;
-        this.detailAddress = detailAddress;
-        this.extraAddress = extraAddress;
-        this.isMain = isMain;
+    public void updateMainAddress(boolean main) {
+        this.main = main;
     }
 
-    public void updateMainAddress(boolean isMain) {
-        this.isMain = isMain;
-    }
-
-    public void updateAddressValid(boolean isValid) {
-        this.isValid = isValid;
-    }
 }

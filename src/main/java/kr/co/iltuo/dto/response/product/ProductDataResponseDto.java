@@ -18,6 +18,6 @@ public class ProductDataResponseDto {
     private long discountedPrice;
     private long optionCount;
     private int discountedRate;
-    private boolean isRecommended;
+    private boolean recommended;
     private Instant registerDate;
 }

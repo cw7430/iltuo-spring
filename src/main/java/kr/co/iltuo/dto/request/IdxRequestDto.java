@@ -5,6 +5,6 @@ import lombok.*;
 @Getter
 @Setter
 @NoArgsConstructor
-public class IdxSingleRequestDto {
+public class IdxRequestDto {
     private Long idx;
 }

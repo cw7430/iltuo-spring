@@ -9,6 +9,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public interface ProductViewRepository extends JpaRepository<ProductView, Long> {
 
-    List<ProductView> findByIsRecommendedTrue();
+    List<ProductView> findByRecommendedTrue();
     List<ProductView> findByMajorCategoryId(Long majorCategoryId);
 }

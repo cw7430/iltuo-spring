@@ -1,7 +1,7 @@
 package kr.co.iltuo.service.auth;
 
 import jakarta.servlet.http.*;
-import kr.co.iltuo.dto.request.IdxSingleRequestDto;
+import kr.co.iltuo.dto.request.*;
 import kr.co.iltuo.dto.request.auth.*;
 import kr.co.iltuo.dto.response.PlainResponseDto;
 import kr.co.iltuo.dto.response.auth.*;
@@ -18,6 +18,9 @@ public interface AuthService {
     NativeUserView getNativeProfile(HttpServletRequest request);
     SocialUserView getSocialProfile(HttpServletRequest request);
     List<Address> getUserAddressList(HttpServletRequest request);
+    PlainResponseDto changePassword(HttpServletRequest request, PasswordRequestDto passwordRequestDto);
+    PlainResponseDto changeProfile(HttpServletRequest request, ProfileRequestDto profileRequestDto);
     PlainResponseDto addAddress(HttpServletRequest request, AddressRequestDto addressRequestDto);
-    PlainResponseDto changeMainAddress(HttpServletRequest request, IdxSingleRequestDto idxSingleRequestDto);
+    PlainResponseDto changeMainAddress(HttpServletRequest request, IdxRequestDto idxRequestDto);
+    PlainResponseDto invalidateAddresses(HttpServletRequest request, List<IdxRequestDto> idxRequests);
 }

@@ -7,5 +7,5 @@ import org.springframework.data.jpa.repository.*;
 import java.util.*;
 
 public interface OptionRepository extends JpaRepository<Option, Long> {
-    List<Option> findByMajorCategoryIdAndIsValidTrue(Long majorCategoryId);
+    List<Option> findByMajorCategoryIdAndValidTrue(Long majorCategoryId);
 }
