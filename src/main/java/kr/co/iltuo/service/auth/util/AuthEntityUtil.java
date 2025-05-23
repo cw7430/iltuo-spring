@@ -18,12 +18,6 @@ public class AuthEntityUtil {
                 .build();
     }
 
-    public static void updateUser(User user) {
-        user.updateUser(
-                Instant.now()
-        );
-    }
-
     public static void updateUserValid(User user, boolean isValid) {
         user.updateUserValid(isValid);
     }
@@ -40,20 +34,7 @@ public class AuthEntityUtil {
                 .build();
     }
 
-    public static void updateSignUpNativeAuth(
-            NativeAuth nativeAuth, PasswordEncoder passwordEncoder, NativeSignUpRequestDto nativeSignUpRequestDto
-    ) {
-        nativeAuth.updateInfo(
-                nativeSignUpRequestDto.getPhoneNumber(),
-                nativeSignUpRequestDto.getEmail()
-        );
-        nativeAuth.changeName(nativeSignUpRequestDto.getUserName());
-        nativeAuth.changePassword(
-                passwordEncoder.encode(nativeSignUpRequestDto.getPassword())
-        );
-    }
-
-    public static void updateChangeNativeAuth(
+    public static void updateNativeAuth(
             NativeAuth nativeAuth, ProfileRequestDto profileRequestDto
     ) {
         nativeAuth.updateInfo(

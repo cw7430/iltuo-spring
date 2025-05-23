@@ -31,10 +31,6 @@ public class NativeAuth {
         this.email = email;
     }
 
-    public void changeName(String userName) {
-        this.userName = userName;
-    }
-
     public void changePassword(String encodedPassword) {
         this.password = encodedPassword;
     }

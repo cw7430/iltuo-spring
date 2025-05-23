@@ -8,6 +8,4 @@ import java.util.*;
 public interface UserRepository extends JpaRepository<User,Long> {
     Optional<User> findByUserId(String userId);
     int countByUserId(String userId);
-    int countByUserIdAndValidTrue(String userId);
-    Optional<User> findByUserIdAndValidFalse(String userId);
 }

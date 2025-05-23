@@ -76,7 +76,7 @@ public class AuthServiceImplement implements AuthService {
 
     @Override
     public PlainResponseDto idDuplicateCheck(UserIdDuplicateCheckRequestDto userIdDuplicateCheckRequestDto) {
-        int count = userRepository.countByUserIdAndValidTrue(userIdDuplicateCheckRequestDto.getUserId());
+        int count = userRepository.countByUserId(userIdDuplicateCheckRequestDto.getUserId());
         if (count != 0) {
             throw new CustomException(ResponseCode.DUPLICATE_RESOURCE);
         }
@@ -86,27 +86,18 @@ public class AuthServiceImplement implements AuthService {
     @Override
     @Transactional
     public SignInResponseDto signUpNative(HttpServletResponse response, NativeSignUpRequestDto nativeSignUpRequestDto) {
-        int userCount = userRepository.countByUserId(nativeSignUpRequestDto.getUserId());
-        User user;
-        if (userCount != 0) {
-            user = userRepository.findByUserIdAndValidFalse(nativeSignUpRequestDto.getUserId())
-                    .orElseThrow(() -> new CustomException(ResponseCode.DUPLICATE_RESOURCE));
-            AuthEntityUtil.updateUser(user);
-            AuthEntityUtil.updateUserValid(user, true);
-            userRepository.save(user);
 
-            NativeAuth nativeAuth = nativeAuthRepository.findById(user.getUserIdx())
-                    .orElseThrow(() -> new CustomException(ResponseCode.CONFLICT));
-            AuthEntityUtil.updateSignUpNativeAuth(nativeAuth, passwordEncoder, nativeSignUpRequestDto);
-            nativeAuthRepository.save(nativeAuth);
-
-        } else {
-            user = AuthEntityUtil.insertUser(nativeSignUpRequestDto.getUserId(), "NATIVE");
-            userRepository.save(user);
-
-            NativeAuth nativeAuth = AuthEntityUtil.insertNativeAuth(user, passwordEncoder, nativeSignUpRequestDto);
-            nativeAuthRepository.save(nativeAuth);
+        int count = userRepository.countByUserId(nativeSignUpRequestDto.getUserId());
+        if (count != 0) {
+            throw new CustomException(ResponseCode.DUPLICATE_RESOURCE);
         }
+
+        User user = AuthEntityUtil.insertUser(nativeSignUpRequestDto.getUserId(), "NATIVE");
+        userRepository.save(user);
+
+        NativeAuth nativeAuth = AuthEntityUtil.insertNativeAuth(user, passwordEncoder, nativeSignUpRequestDto);
+        nativeAuthRepository.save(nativeAuth);
+
         String userPermission = AuthConvertUtil.convertPermission(user.getUserPermissionsCode());
         String authMethod = AuthConvertUtil.convertAuthMethodToString(user.getAuthMethodCode());
 
@@ -203,6 +194,9 @@ public class AuthServiceImplement implements AuthService {
                 .orElseThrow(() -> new CustomException(ResponseCode.RESOURCE_NOT_FOUND));
         NativeAuth nativeAuth = nativeAuthRepository.findById(user.getUserIdx())
                 .orElseThrow(() -> new CustomException(ResponseCode.RESOURCE_NOT_FOUND));
+        if((passwordRequestDto.getPrevPassword()).equals(passwordRequestDto.getNewPassword())) {
+            throw new CustomException(ResponseCode.CONFLICT);
+        }
         if (!passwordEncoder.matches(passwordRequestDto.getPrevPassword(), nativeAuth.getPassword())) {
             throw new CustomException(ResponseCode.LOGIN_ERROR);
         }
@@ -222,7 +216,7 @@ public class AuthServiceImplement implements AuthService {
         if (!passwordEncoder.matches(profileRequestDto.getPassword(), nativeAuth.getPassword())) {
             throw new CustomException(ResponseCode.LOGIN_ERROR);
         }
-        AuthEntityUtil.updateChangeNativeAuth(nativeAuth, profileRequestDto);
+        AuthEntityUtil.updateNativeAuth(nativeAuth, profileRequestDto);
         nativeAuthRepository.save(nativeAuth);
         return new PlainResponseDto(true);
     }

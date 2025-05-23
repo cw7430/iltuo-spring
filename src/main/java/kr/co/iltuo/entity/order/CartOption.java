@@ -21,6 +21,4 @@ public class CartOption {
     @Column(name = "`option_detail_id`", nullable = false)
     private Long optionDetailId;
 
-    @Column(name = "`quantity`", nullable = false)
-    private int quantity;
 }
