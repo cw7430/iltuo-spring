@@ -20,6 +20,9 @@ public class CartOptionView {
     @Column(name = "`option_detail_id`")
     private Long optionDetailId;
 
+    @Column(name = "`user_idx`")
+    private Long userIdx;
+
     @Column(name = "`option_id`")
     private Long optionId;
 

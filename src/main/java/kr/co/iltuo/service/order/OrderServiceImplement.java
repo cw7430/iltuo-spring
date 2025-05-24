@@ -39,4 +39,17 @@ public class OrderServiceImplement implements OrderService {
         cartOptionRepository.saveAll(cartOptions);
         return new PlainResponseDto(true);
     }
+
+    @Override
+    public CartView cartList(HttpServletRequest request) {
+        String userId = jwtProvider.extractUserIdFromRequest(request, "ACCESS");
+        User user = userRepository.findByUserId(userId)
+                .orElseThrow(() -> new CustomException(ResponseCode.RESOURCE_NOT_FOUND));
+        return null;
+    }
+
+    @Override
+    public CartOptionView cartOptionList(HttpServletRequest request) {
+        return null;
+    }
 }
