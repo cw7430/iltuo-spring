@@ -48,6 +48,12 @@ public class AuthServiceImplement implements AuthService {
         refreshTokenRepository.save(refreshToken);
     }
 
+    private User getUserByToken(HttpServletRequest request) {
+        String userId = jwtProvider.extractUserIdFromRequest(request, "ACCESS");
+        return userRepository.findByUserId(userId)
+                .orElseThrow(() -> new CustomException(ResponseCode.RESOURCE_NOT_FOUND));
+    }
+
     @Override
     @Transactional
     public SignInResponseDto signInNative(HttpServletResponse response, NativeSignInRequestDto nativeSignInRequestDto) {
@@ -179,9 +185,7 @@ public class AuthServiceImplement implements AuthService {
 
     @Override
     public List<Address> getUserAddressList(HttpServletRequest request) {
-        String userId = jwtProvider.extractUserIdFromRequest(request, "ACCESS");
-        User user = userRepository.findByUserId(userId)
-                .orElseThrow(() -> new CustomException(ResponseCode.RESOURCE_NOT_FOUND));
+        User user = getUserByToken(request);
         Sort sort = Sort.by(Sort.Direction.DESC, "main");
         return addressRepository.findByUserIdxAndValidTrue(user.getUserIdx(), sort);
     }
@@ -189,12 +193,10 @@ public class AuthServiceImplement implements AuthService {
     @Override
     @Transactional
     public PlainResponseDto changePassword(HttpServletRequest request, PasswordRequestDto passwordRequestDto) {
-        String userId = jwtProvider.extractUserIdFromRequest(request, "ACCESS");
-        User user = userRepository.findByUserId(userId)
-                .orElseThrow(() -> new CustomException(ResponseCode.RESOURCE_NOT_FOUND));
+        User user = getUserByToken(request);
         NativeAuth nativeAuth = nativeAuthRepository.findById(user.getUserIdx())
                 .orElseThrow(() -> new CustomException(ResponseCode.RESOURCE_NOT_FOUND));
-        if((passwordRequestDto.getPrevPassword()).equals(passwordRequestDto.getNewPassword())) {
+        if ((passwordRequestDto.getPrevPassword()).equals(passwordRequestDto.getNewPassword())) {
             throw new CustomException(ResponseCode.CONFLICT);
         }
         if (!passwordEncoder.matches(passwordRequestDto.getPrevPassword(), nativeAuth.getPassword())) {
@@ -208,9 +210,7 @@ public class AuthServiceImplement implements AuthService {
     @Override
     @Transactional
     public PlainResponseDto changeProfile(HttpServletRequest request, ProfileRequestDto profileRequestDto) {
-        String userId = jwtProvider.extractUserIdFromRequest(request, "ACCESS");
-        User user = userRepository.findByUserId(userId)
-                .orElseThrow(() -> new CustomException(ResponseCode.RESOURCE_NOT_FOUND));
+        User user = getUserByToken(request);
         NativeAuth nativeAuth = nativeAuthRepository.findById(user.getUserIdx())
                 .orElseThrow(() -> new CustomException(ResponseCode.RESOURCE_NOT_FOUND));
         if (!passwordEncoder.matches(profileRequestDto.getPassword(), nativeAuth.getPassword())) {
@@ -224,10 +224,7 @@ public class AuthServiceImplement implements AuthService {
     @Override
     @Transactional
     public PlainResponseDto addAddress(HttpServletRequest request, AddressRequestDto addressRequestDto) {
-        String userId = jwtProvider.extractUserIdFromRequest(request, "ACCESS");
-        User user = userRepository.findByUserId(userId)
-                .orElseThrow(() -> new CustomException(ResponseCode.RESOURCE_NOT_FOUND));
-
+        User user = getUserByToken(request);
         if (addressRequestDto.isMain()) {
             addressRepository.findByUserIdxAndValidTrueAndMainTrue(user.getUserIdx())
                     .ifPresent(existingMainAddress -> {
@@ -245,9 +242,7 @@ public class AuthServiceImplement implements AuthService {
     @Override
     @Transactional
     public PlainResponseDto changeMainAddress(HttpServletRequest request, IdxRequestDto idxRequestDto) {
-        String userId = jwtProvider.extractUserIdFromRequest(request, "ACCESS");
-        User user = userRepository.findByUserId(userId)
-                .orElseThrow(() -> new CustomException(ResponseCode.RESOURCE_NOT_FOUND));
+        User user = getUserByToken(request);
         addressRepository.findByUserIdxAndValidTrueAndMainTrue(user.getUserIdx())
                 .ifPresent(existingMainAddress -> {
                     existingMainAddress.updateMainAddress(false);

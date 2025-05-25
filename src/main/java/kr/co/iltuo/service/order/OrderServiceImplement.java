@@ -39,18 +39,6 @@ public class OrderServiceImplement implements OrderService {
     }
 
     @Override
-    @Transactional
-    public PlainResponseDto addCart(HttpServletRequest request, AddCartRequestDto addCartRequestDto) {
-        User user = getUserByToken(request);
-        Cart cart = OrderEntityUtil.insertCart(addCartRequestDto, user);
-        cartRepository.save(cart);
-
-        List<CartOption> cartOptions = OrderEntityUtil.insertCartOptions(addCartRequestDto, cart);
-        cartOptionRepository.saveAll(cartOptions);
-        return new PlainResponseDto(true);
-    }
-
-    @Override
     public List<CartView> cartList(HttpServletRequest request) {
         User user = getUserByToken(request);
         return cartViewRepository.findByUserIdx(user.getUserIdx());
@@ -64,7 +52,19 @@ public class OrderServiceImplement implements OrderService {
 
     @Override
     @Transactional
-    public PlainResponseDto deleteCartSingle(HttpServletRequest request, IdxRequestDto idxRequestDto) {
+    public PlainResponseDto addCart(HttpServletRequest request, AddCartRequestDto addCartRequestDto) {
+        User user = getUserByToken(request);
+        Cart cart = OrderEntityUtil.insertCart(addCartRequestDto, user);
+        cartRepository.save(cart);
+
+        List<CartOption> cartOptions = OrderEntityUtil.insertCartOptions(addCartRequestDto, cart);
+        cartOptionRepository.saveAll(cartOptions);
+        return new PlainResponseDto(true);
+    }
+
+    @Override
+    @Transactional
+    public PlainResponseDto deleteCart(HttpServletRequest request, IdxRequestDto idxRequestDto) {
         String token = jwtProvider.extractAccessTokenFromCookie(request);
         if (!StringUtils.hasText(token) || !jwtProvider.validateAccessToken(token)) {
             throw new CustomException(ResponseCode.UNAUTHORIZED);
@@ -75,6 +75,28 @@ public class OrderServiceImplement implements OrderService {
 
         cartRepository.deleteById(idxRequestDto.getIdx());
         
+        return new PlainResponseDto(true);
+    }
+
+    @Override
+    @Transactional
+    public PlainResponseDto deleteCartsAll(HttpServletRequest request) {
+        User user = getUserByToken(request);
+
+        List<Cart> cartList = cartRepository.findByUserIdx(user.getUserIdx());
+        List<Long> cartIds = cartList.stream().map(Cart::getCartId).toList();
+
+        if (cartIds.isEmpty()) {
+            log.info("No carts to delete for userIdx: {}", user.getUserIdx());
+            return new PlainResponseDto(true);
+        }
+
+        long optionDeleteCount = cartOptionRepository.deleteAllByCartIdIn(cartIds);
+        log.info("Deleted {} cartOption(s) for cartIds: {}", optionDeleteCount, cartIds);
+
+        long cartDeleteCount = cartRepository.deleteByUserIdx(user.getUserIdx());
+        log.info("Deleted {} carts for userIdx: {}", cartDeleteCount, user.getUserIdx());
+
         return new PlainResponseDto(true);
     }
 

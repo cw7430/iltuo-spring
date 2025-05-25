@@ -26,5 +26,6 @@ public class CartView {
     @Column(name = "`price`")
     private long price;
 
-
+    @Column(name = "`quantity`", nullable = false)
+    private int quantity;
 }

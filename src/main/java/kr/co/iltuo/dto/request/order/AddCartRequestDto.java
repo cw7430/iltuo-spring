@@ -10,5 +10,5 @@ import java.util.*;
 public class AddCartRequestDto {
     private Long productId;
     private int quantity;
-    private List<IdxRequestDto> option;
+    private List<IdxRequestDto> options;
 }

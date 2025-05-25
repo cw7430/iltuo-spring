@@ -9,8 +9,9 @@ import kr.co.iltuo.entity.order.*;
 import java.util.*;
 
 public interface OrderService {
-    PlainResponseDto addCart(HttpServletRequest request, AddCartRequestDto addCartRequestDto);
     List<CartView> cartList(HttpServletRequest request);
     List<CartOptionView> cartOptionList(HttpServletRequest request);
-    PlainResponseDto deleteCartSingle(HttpServletRequest request, IdxRequestDto idxRequestDto);
+    PlainResponseDto addCart(HttpServletRequest request, AddCartRequestDto addCartRequestDto);
+    PlainResponseDto deleteCart(HttpServletRequest request, IdxRequestDto idxRequestDto);
+    PlainResponseDto deleteCartsAll(HttpServletRequest request);
 }

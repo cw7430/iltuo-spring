@@ -37,7 +37,7 @@ public class Product {
     private int discountedRate;
 
     @Column(name = "`is_recommended`", nullable = false)
-    private boolean isRecommended;
+    private boolean recommended;
 
     @Column(name = "`register_date`", nullable = false)
     private Instant registerDate;

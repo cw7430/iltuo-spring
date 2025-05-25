@@ -18,7 +18,7 @@ public class OrderEntityUtil {
     }
 
     public static List<CartOption> insertCartOptions(AddCartRequestDto addCartRequestDto, Cart cart) {
-        return addCartRequestDto.getOption().stream()
+        return addCartRequestDto.getOptions().stream()
                 .map(optionDto -> CartOption.builder()
                         .cartId(cart.getCartId())
                         .optionDetailId(optionDto.getIdx())
