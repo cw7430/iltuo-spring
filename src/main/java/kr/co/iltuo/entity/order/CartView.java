@@ -20,11 +20,17 @@ public class CartView {
     @Column(name = "`product_name`")
     private String productName;
 
+    @Column(name = "`product_code`", nullable = false, length = 65, unique = true)
+    private String productCode;
+
     @Column(name = "`user_idx`")
     private Long userIdx;
 
     @Column(name = "`price`")
     private long price;
+
+    @Column(name = "`discounted_rate`", nullable = false)
+    private int discountedRate;
 
     @Column(name = "`quantity`", nullable = false)
     private int quantity;

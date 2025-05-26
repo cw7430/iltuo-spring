@@ -6,6 +6,7 @@ import kr.co.iltuo.common.exception.CustomException;
 import kr.co.iltuo.dto.request.IdxRequestDto;
 import kr.co.iltuo.dto.request.order.*;
 import kr.co.iltuo.dto.response.PlainResponseDto;
+import kr.co.iltuo.dto.response.order.*;
 import kr.co.iltuo.entity.auth.*;
 import kr.co.iltuo.entity.order.*;
 import kr.co.iltuo.repository.auth.*;
@@ -39,9 +40,10 @@ public class OrderServiceImplement implements OrderService {
     }
 
     @Override
-    public List<CartView> cartList(HttpServletRequest request) {
+    public List<CartDataResponseDto> cartList(HttpServletRequest request) {
         User user = getUserByToken(request);
-        return cartViewRepository.findByUserIdx(user.getUserIdx());
+        List<CartView> cartList = cartViewRepository.findByUserIdx(user.getUserIdx());
+        return OrderEntityUtil.makeCartList(cartList);
     }
 
     @Override
@@ -74,7 +76,7 @@ public class OrderServiceImplement implements OrderService {
         log.info("Deleted {} cartOption(s) for cartId: {}", optionDeleteCount, idxRequestDto.getIdx());
 
         cartRepository.deleteById(idxRequestDto.getIdx());
-        
+
         return new PlainResponseDto(true);
     }
 

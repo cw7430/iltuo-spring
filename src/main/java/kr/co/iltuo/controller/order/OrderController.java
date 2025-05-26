@@ -5,6 +5,7 @@ import kr.co.iltuo.dto.request.IdxRequestDto;
 import kr.co.iltuo.dto.request.order.*;
 import kr.co.iltuo.dto.response.PlainResponseDto;
 import kr.co.iltuo.dto.response.ResponseDto;
+import kr.co.iltuo.dto.response.order.*;
 import kr.co.iltuo.entity.order.*;
 import kr.co.iltuo.service.order.OrderService;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +21,7 @@ public class OrderController {
     private final OrderService orderService;
 
     @GetMapping("/cart")
-    public ResponseDto<List<CartView>> cartList(HttpServletRequest request) {
+    public ResponseDto<List<CartDataResponseDto>> cartList(HttpServletRequest request) {
         return ResponseDto.success(orderService.cartList(request));
     }
 
