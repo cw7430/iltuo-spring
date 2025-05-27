@@ -132,4 +132,14 @@ public class OrderServiceImplement implements OrderService {
         return new IdxResponseDto(orderGroup.getPaymentId());
     }
 
+    @Override
+    public IdxResponseDto addOrders(HttpServletRequest request, List<AddOrderRequestDto> addOrderRequestDtoList) {
+        User user = getUserByToken(request);
+
+        OrderGroup orderGroup = OrderEntityUtil.insertOrderGroup(user);
+        orderGroupRepository.save(orderGroup);
+
+        return new IdxResponseDto(orderGroup.getPaymentId());
+    }
+
 }
