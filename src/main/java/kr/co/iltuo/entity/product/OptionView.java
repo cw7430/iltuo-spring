@@ -26,6 +26,9 @@ public class OptionView {
     @Column(name = "`option_type_code`")
     private String optionTypeCode;
 
+    @Column(name = "`option_name`")
+    private String optionName;
+
     @Column(name = "`option_detail_name`")
     private String optionDetailName;
 

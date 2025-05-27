@@ -25,5 +25,5 @@ public class OrderOption {
     private String optionDetailName;
 
     @Column(name = "`option_fluctuating_price`", nullable = false)
-    private int optionFluctuatingPrice;
+    private long optionFluctuatingPrice;
 }

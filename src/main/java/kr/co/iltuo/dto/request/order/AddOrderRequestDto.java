@@ -7,7 +7,7 @@ import java.util.*;
 
 @Getter
 @NoArgsConstructor
-public class AddCartRequestDto {
+public class AddOrderRequestDto {
     private Long productId;
     private int quantity;
     private List<IdxRequestDto> options;

@@ -12,11 +12,8 @@ import java.time.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class Delivery {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "`delivery_id`", nullable = false)
-    private Long deliveryId;
 
+    @Id
     @Column(name = "`payment_id`", nullable = false)
     private Long paymentId;
 

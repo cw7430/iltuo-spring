@@ -6,7 +6,6 @@ import kr.co.iltuo.dto.request.order.*;
 import kr.co.iltuo.dto.response.PlainResponseDto;
 import kr.co.iltuo.dto.response.ResponseDto;
 import kr.co.iltuo.dto.response.order.*;
-import kr.co.iltuo.entity.order.*;
 import kr.co.iltuo.service.order.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -25,14 +24,9 @@ public class OrderController {
         return ResponseDto.success(orderService.cartList(request));
     }
 
-    @GetMapping("/cart_options")
-    public ResponseDto<List<CartOptionView>> cartOptionList(HttpServletRequest request) {
-        return ResponseDto.success(orderService.cartOptionList(request));
-    }
-
     @PostMapping("/add_cart")
-    public ResponseDto<PlainResponseDto> addCart(HttpServletRequest request, @RequestBody AddCartRequestDto addCartRequestDto) {
-        return ResponseDto.success(orderService.addCart(request, addCartRequestDto));
+    public ResponseDto<PlainResponseDto> addCart(HttpServletRequest request, @RequestBody AddOrderRequestDto addOrderRequestDto) {
+        return ResponseDto.success(orderService.addCart(request, addOrderRequestDto));
     }
 
     @PostMapping("/delete_cart")

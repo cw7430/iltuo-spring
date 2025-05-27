@@ -5,12 +5,15 @@ import kr.co.iltuo.common.code.ResponseCode;
 import kr.co.iltuo.common.exception.CustomException;
 import kr.co.iltuo.dto.request.IdxRequestDto;
 import kr.co.iltuo.dto.request.order.*;
+import kr.co.iltuo.dto.response.IdxResponseDto;
 import kr.co.iltuo.dto.response.PlainResponseDto;
 import kr.co.iltuo.dto.response.order.*;
 import kr.co.iltuo.entity.auth.*;
 import kr.co.iltuo.entity.order.*;
+import kr.co.iltuo.entity.product.*;
 import kr.co.iltuo.repository.auth.*;
 import kr.co.iltuo.repository.order.*;
+import kr.co.iltuo.repository.product.*;
 import kr.co.iltuo.security.jwt.JwtProvider;
 import kr.co.iltuo.service.order.util.*;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +31,12 @@ public class OrderServiceImplement implements OrderService {
 
     private final UserRepository userRepository;
     private final CartRepository cartRepository;
+    private final ProductRepository productRepository;
+    private final OptionViewRepository optionViewRepository;
+    private final OrderGroupRepository orderGroupRepository;
+    private final OrderRepository orderRepository;
+    private final OrderOptionRepository orderOptionRepository;
+    private final OrderPriceRepository orderPriceRepository;
     private final CartOptionRepository cartOptionRepository;
     private final CartViewRepository cartViewRepository;
     private final CartOptionViewRepository cartOptionViewRepository;
@@ -43,23 +52,18 @@ public class OrderServiceImplement implements OrderService {
     public List<CartDataResponseDto> cartList(HttpServletRequest request) {
         User user = getUserByToken(request);
         List<CartView> cartList = cartViewRepository.findByUserIdx(user.getUserIdx());
-        return OrderEntityUtil.makeCartList(cartList);
-    }
-
-    @Override
-    public List<CartOptionView> cartOptionList(HttpServletRequest request) {
-        User user = getUserByToken(request);
-        return cartOptionViewRepository.findByUserIdx(user.getUserIdx());
+        List<CartOptionView> optionList = cartOptionViewRepository.findByUserIdx(user.getUserIdx());
+        return OrderEntityUtil.makeCartList(cartList, optionList);
     }
 
     @Override
     @Transactional
-    public PlainResponseDto addCart(HttpServletRequest request, AddCartRequestDto addCartRequestDto) {
+    public PlainResponseDto addCart(HttpServletRequest request, AddOrderRequestDto addOrderRequestDto) {
         User user = getUserByToken(request);
-        Cart cart = OrderEntityUtil.insertCart(addCartRequestDto, user);
+        Cart cart = OrderEntityUtil.insertCart(addOrderRequestDto, user);
         cartRepository.save(cart);
 
-        List<CartOption> cartOptions = OrderEntityUtil.insertCartOptions(addCartRequestDto, cart);
+        List<CartOption> cartOptions = OrderEntityUtil.insertCartOptions(addOrderRequestDto, cart);
         cartOptionRepository.saveAll(cartOptions);
         return new PlainResponseDto(true);
     }
@@ -100,6 +104,33 @@ public class OrderServiceImplement implements OrderService {
         log.info("Deleted {} carts for userIdx: {}", cartDeleteCount, user.getUserIdx());
 
         return new PlainResponseDto(true);
+    }
+
+    @Override
+    @Transactional
+    public IdxResponseDto addOrder(HttpServletRequest request, AddOrderRequestDto addOrderRequestDto) {
+        User user = getUserByToken(request);
+
+        OrderGroup orderGroup = OrderEntityUtil.insertOrderGroup(user);
+        orderGroupRepository.save(orderGroup);
+
+        Product product = productRepository.findById(addOrderRequestDto.getProductId())
+                .orElseThrow(() -> new CustomException(ResponseCode.RESOURCE_NOT_FOUND));
+
+        Order order = OrderEntityUtil.insertOrder(addOrderRequestDto, orderGroup, product);
+        orderRepository.save(order);
+
+        List<OrderOption> orderOptions = Collections.emptyList();
+
+        if (!addOrderRequestDto.getOptions().isEmpty()) {
+            List<OptionView> options = optionViewRepository.findByOptionDetailIdIn(addOrderRequestDto.getOptions());
+            orderOptions = OrderEntityUtil.insertOrderOption(addOrderRequestDto, order, product, options);
+            orderOptionRepository.saveAll(orderOptions);
+        }
+
+        OrderPrice orderPrice = OrderEntityUtil.insertOrderPrice(addOrderRequestDto, order, product, orderOptions);
+        orderPriceRepository.save(orderPrice);
+        return new IdxResponseDto(orderGroup.getPaymentId());
     }
 
 }

@@ -2,6 +2,8 @@ package kr.co.iltuo.dto.response.order;
 
 import lombok.*;
 
+import java.util.*;
+
 @Getter
 @AllArgsConstructor
 @Builder
@@ -13,4 +15,5 @@ public class CartDataResponseDto {
     private Long userIdx;
     private long price;
     private int quantity;
+    private List<CartOptionDataResponseDto> options;
 }

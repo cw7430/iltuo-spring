@@ -49,8 +49,9 @@ public class WebSecurityConfig {
                                 AuthEndpoint.NATIVE_PROFILE.getPath(), AuthEndpoint.SOCIAL_PROFILE.getPath(), AuthEndpoint.ADDRESS_LIST.getPath(),
                                 AuthEndpoint.CHANGE_PASSWORD.getPath(), AuthEndpoint.CHANGE_PROFILE.getPath(), AuthEndpoint.ADD_ADDRESS.getPath(),
                                 AuthEndpoint.CHANGE_MAIN_ADDRESS.getPath(), AuthEndpoint.INVALIDATE_ADDRESSES.getPath(), OrderEndpoint.CART.getPath(),
-                                OrderEndpoint.CART_OPTIONS.getPath(), OrderEndpoint.ADD_CART.getPath(), OrderEndpoint.DELETE_CART.getPath(),
-                                OrderEndpoint.DELETE_CARTS_ALL.getPath()
+                                OrderEndpoint.ADD_CART.getPath(), OrderEndpoint.DELETE_CART.getPath(), OrderEndpoint.DELETE_CARTS_ALL.getPath(),
+                                OrderEndpoint.ORDER.getPath(), OrderEndpoint.PAYMENT.getPath(), OrderEndpoint.ADD_ORDER.getPath(),
+                                OrderEndpoint.ADD_ORDERS.getPath(), OrderEndpoint.ADD_PAYMENT.getPath()
                         ).hasAnyRole("USER", "ADMIN")
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
