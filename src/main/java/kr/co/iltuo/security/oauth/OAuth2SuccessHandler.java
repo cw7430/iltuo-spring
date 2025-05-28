@@ -1,16 +1,20 @@
 package kr.co.iltuo.security.oauth;
 
-import jakarta.servlet.*;
-import jakarta.servlet.http.*;
-import kr.co.iltuo.dto.response.auth.*;
-import kr.co.iltuo.entity.auth.*;
-import kr.co.iltuo.repository.auth.*;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import kr.co.iltuo.dto.response.auth.AccessTokenResponseDto;
+import kr.co.iltuo.dto.response.auth.RefreshTokenResponseDto;
+import kr.co.iltuo.entity.auth.RefreshToken;
+import kr.co.iltuo.entity.auth.User;
+import kr.co.iltuo.repository.auth.RefreshTokenRepository;
 import kr.co.iltuo.security.jwt.JwtProvider;
-import kr.co.iltuo.service.auth.util.*;
+import kr.co.iltuo.service.auth.util.AuthConvertUtil;
+import kr.co.iltuo.service.auth.util.AuthEntityUtil;
+import kr.co.iltuo.service.auth.util.AuthTokenUtil;
 import kr.co.iltuo.service.global.util.CookieUtil;
-import lombok.*;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.web.authentication.*;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;

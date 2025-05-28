@@ -1,6 +1,7 @@
 package kr.co.iltuo.service.global.util;
 
-import jakarta.servlet.http.*;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 
 public class CookieUtil {
     public static void addHttpOnlyCookie(HttpServletResponse response, String name, String value, int maxAgeInSeconds) {

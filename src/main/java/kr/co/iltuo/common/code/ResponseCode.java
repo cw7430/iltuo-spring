@@ -1,6 +1,7 @@
 package kr.co.iltuo.common.code;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
 @AllArgsConstructor

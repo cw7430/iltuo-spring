@@ -2,13 +2,19 @@ package kr.co.iltuo.controller.product;
 
 import kr.co.iltuo.dto.request.IdxRequestDto;
 import kr.co.iltuo.dto.response.ResponseDto;
-import kr.co.iltuo.dto.response.product.*;
-import kr.co.iltuo.entity.product.*;
+import kr.co.iltuo.dto.response.product.ProductDataResponseDto;
+import kr.co.iltuo.entity.product.MajorCategory;
+import kr.co.iltuo.entity.product.MinerCategory;
+import kr.co.iltuo.entity.product.Option;
+import kr.co.iltuo.entity.product.OptionView;
 import kr.co.iltuo.service.product.ProductService;
-import lombok.*;
-import org.springframework.web.bind.annotation.*;
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.*;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor

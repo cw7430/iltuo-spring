@@ -1,17 +1,22 @@
 package kr.co.iltuo.controller.auth;
 
-import jakarta.servlet.http.*;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import kr.co.iltuo.dto.request.IdxRequestDto;
 import kr.co.iltuo.dto.request.auth.*;
-import kr.co.iltuo.dto.response.auth.*;
-import kr.co.iltuo.dto.response.*;
-import kr.co.iltuo.entity.auth.*;
+import kr.co.iltuo.dto.response.PlainResponseDto;
+import kr.co.iltuo.dto.response.ResponseDto;
+import kr.co.iltuo.dto.response.auth.RefreshAccessTokenResponseDto;
+import kr.co.iltuo.dto.response.auth.SignInResponseDto;
+import kr.co.iltuo.entity.auth.Address;
+import kr.co.iltuo.entity.auth.NativeUserView;
+import kr.co.iltuo.entity.auth.SocialUserView;
 import kr.co.iltuo.service.auth.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.*;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor

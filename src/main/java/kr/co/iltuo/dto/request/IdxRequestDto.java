@@ -1,6 +1,8 @@
 package kr.co.iltuo.dto.request;
 
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
 @Setter

@@ -2,7 +2,8 @@ package kr.co.iltuo.entity.order;
 
 import jakarta.persistence.*;
 import lombok.*;
-import java.time.*;
+
+import java.time.Instant;
 
 @Entity
 @Table(name = "`cart`")

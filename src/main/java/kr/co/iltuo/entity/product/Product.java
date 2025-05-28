@@ -3,7 +3,7 @@ package kr.co.iltuo.entity.product;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.*;
+import java.time.Instant;
 
 @Entity
 @Table(name = "`product`")

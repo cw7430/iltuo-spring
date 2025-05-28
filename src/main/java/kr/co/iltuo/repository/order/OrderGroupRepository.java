@@ -1,7 +1,7 @@
 package kr.co.iltuo.repository.order;
 
 import kr.co.iltuo.entity.order.OrderGroup;
-import org.springframework.data.jpa.repository.*;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 

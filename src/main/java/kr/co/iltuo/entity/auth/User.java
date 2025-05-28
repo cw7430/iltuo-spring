@@ -3,7 +3,7 @@ package kr.co.iltuo.entity.auth;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.*;
+import java.time.Instant;
 
 @Entity
 @Table(name = "`user`")

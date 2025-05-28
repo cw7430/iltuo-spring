@@ -2,17 +2,21 @@ package kr.co.iltuo.service.auth;
 
 import kr.co.iltuo.common.code.ResponseCode;
 import kr.co.iltuo.common.exception.CustomException;
-import kr.co.iltuo.entity.auth.*;
-import kr.co.iltuo.repository.auth.*;
+import kr.co.iltuo.entity.auth.SocialAuth;
+import kr.co.iltuo.entity.auth.User;
+import kr.co.iltuo.repository.auth.SocialAuthRepository;
+import kr.co.iltuo.repository.auth.UserRepository;
 import kr.co.iltuo.security.oauth.CustomOAuth2User;
-import kr.co.iltuo.service.auth.util.*;
-import org.springframework.security.oauth2.client.userinfo.*;
+import kr.co.iltuo.service.auth.util.AuthEntityUtil;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
+import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
-import lombok.*;
 
-import java.util.*;
+import java.util.Map;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor

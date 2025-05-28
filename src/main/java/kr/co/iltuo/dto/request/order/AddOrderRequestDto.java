@@ -1,9 +1,10 @@
 package kr.co.iltuo.dto.request.order;
 
 import kr.co.iltuo.dto.request.IdxRequestDto;
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-import java.util.*;
+import java.util.List;
 
 @Getter
 @NoArgsConstructor

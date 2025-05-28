@@ -1,10 +1,15 @@
 package kr.co.iltuo.entity.product;
 
-import jakarta.persistence.*;
-import lombok.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Immutable;
 
-import java.time.*;
+import java.time.Instant;
 
 @Entity
 @Table(name = "`product_view`")

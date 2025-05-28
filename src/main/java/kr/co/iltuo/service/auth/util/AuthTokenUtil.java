@@ -1,7 +1,8 @@
 package kr.co.iltuo.service.auth.util;
 
-import kr.co.iltuo.dto.response.auth.*;
-import kr.co.iltuo.entity.auth.*;
+import kr.co.iltuo.dto.response.auth.AccessTokenResponseDto;
+import kr.co.iltuo.dto.response.auth.RefreshTokenResponseDto;
+import kr.co.iltuo.entity.auth.User;
 import kr.co.iltuo.security.jwt.JwtProvider;
 
 public class AuthTokenUtil {

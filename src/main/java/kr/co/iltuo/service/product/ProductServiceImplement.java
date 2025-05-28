@@ -3,14 +3,14 @@ package kr.co.iltuo.service.product;
 import kr.co.iltuo.common.code.ResponseCode;
 import kr.co.iltuo.common.exception.CustomException;
 import kr.co.iltuo.dto.request.IdxRequestDto;
-import kr.co.iltuo.dto.response.product.*;
+import kr.co.iltuo.dto.response.product.ProductDataResponseDto;
 import kr.co.iltuo.entity.product.*;
 import kr.co.iltuo.repository.product.*;
 import kr.co.iltuo.service.product.util.ProductEntityUtil;
-import lombok.*;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor

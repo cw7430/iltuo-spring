@@ -1,7 +1,7 @@
 package kr.co.iltuo.common.exception;
 
 import kr.co.iltuo.common.code.ResponseCode;
-import lombok.*;
+import lombok.Getter;
 
 @Getter
 public class CustomException extends RuntimeException {

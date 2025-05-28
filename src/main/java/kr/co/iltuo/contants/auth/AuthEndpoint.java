@@ -1,7 +1,8 @@
 package kr.co.iltuo.contants.auth;
 
 import kr.co.iltuo.contants.EndPoint;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
