@@ -30,7 +30,7 @@ public class OrderServiceImplement implements OrderService {
 
     private final UserRepository userRepository;
     private final CartRepository cartRepository;
-    private final ProductRepository productRepository;
+    private final ProductViewRepository productViewRepository;
     private final OptionViewRepository optionViewRepository;
     private final OrderGroupRepository orderGroupRepository;
     private final OrderRepository orderRepository;
@@ -39,6 +39,8 @@ public class OrderServiceImplement implements OrderService {
     private final CartOptionRepository cartOptionRepository;
     private final CartViewRepository cartViewRepository;
     private final CartOptionViewRepository cartOptionViewRepository;
+    private final OrderViewRepository orderViewRepository;
+    private final OrderOptionViewRepository orderOptionViewRepository;
     private final JwtProvider jwtProvider;
 
     private User getUserByToken(HttpServletRequest request) {
@@ -106,6 +108,37 @@ public class OrderServiceImplement implements OrderService {
     }
 
     @Override
+    public OrderGroupDataResponseDto order(HttpServletRequest request, IdxRequestDto idxRequestDto) {
+        String token = jwtProvider.extractAccessTokenFromCookie(request);
+        if (!StringUtils.hasText(token) || !jwtProvider.validateAccessToken(token)) {
+            throw new CustomException(ResponseCode.UNAUTHORIZED);
+        }
+
+        OrderGroup orders = orderGroupRepository.findById(idxRequestDto.getIdx())
+                .orElseThrow(() -> new CustomException(ResponseCode.RESOURCE_NOT_FOUND));
+
+        List<OrderView> order = orderViewRepository.findByPaymentId(idxRequestDto.getIdx());
+        if (order.isEmpty()) {
+            throw new CustomException(ResponseCode.RESOURCE_NOT_FOUND);
+        }
+
+        List<OrderOptionView> orderOptions = orderOptionViewRepository.findByPaymentId(idxRequestDto.getIdx());
+
+        return OrderEntityUtil.makeOrderGroup(orders, order, orderOptions);
+    }
+
+    @Override
+    public List<OrderGroupDataResponseDto> orderGroup(HttpServletRequest request) {
+        User user = getUserByToken(request);
+
+        List<OrderGroup> orderGroups = orderGroupRepository.findByUserIdx(user.getUserIdx());
+
+        List<OrderView> orders = orderViewRepository.findByUserIdx(user.getUserIdx());
+
+        return List.of();
+    }
+
+    @Override
     @Transactional
     public IdxResponseDto addOrder(HttpServletRequest request, AddOrderRequestDto addOrderRequestDto) {
         User user = getUserByToken(request);
@@ -113,7 +146,7 @@ public class OrderServiceImplement implements OrderService {
         OrderGroup orderGroup = OrderEntityUtil.insertOrderGroup(user);
         orderGroupRepository.save(orderGroup);
 
-        Product product = productRepository.findById(addOrderRequestDto.getProductId())
+        ProductView product = productViewRepository.findById(addOrderRequestDto.getProductId())
                 .orElseThrow(() -> new CustomException(ResponseCode.RESOURCE_NOT_FOUND));
 
         Order order = OrderEntityUtil.insertOrder(addOrderRequestDto, orderGroup, product);
@@ -122,7 +155,10 @@ public class OrderServiceImplement implements OrderService {
         List<OrderOption> orderOptions = Collections.emptyList();
 
         if (!addOrderRequestDto.getOptions().isEmpty()) {
-            List<OptionView> options = optionViewRepository.findByOptionDetailIdIn(addOrderRequestDto.getOptions());
+            List<Long> optionDetailIdList = addOrderRequestDto.getOptions().stream()
+                    .map(IdxRequestDto::getIdx)
+                    .toList();
+            List<OptionView> options = optionViewRepository.findByOptionDetailIdIn(optionDetailIdList);
             orderOptions = OrderEntityUtil.insertOrderOption(addOrderRequestDto, order, product, options);
             orderOptionRepository.saveAll(orderOptions);
         }
@@ -133,13 +169,39 @@ public class OrderServiceImplement implements OrderService {
     }
 
     @Override
-    public IdxResponseDto addOrders(HttpServletRequest request, List<AddOrderRequestDto> addOrderRequestDtoList) {
+    @Transactional
+    public IdxResponseDto addOrders(HttpServletRequest request, List<AddOrderRequestDto> addOrderRequestList) {
+        if (addOrderRequestList.isEmpty()) {
+            throw new CustomException(ResponseCode.VALIDATION_ERROR);
+        }
         User user = getUserByToken(request);
 
         OrderGroup orderGroup = OrderEntityUtil.insertOrderGroup(user);
         orderGroupRepository.save(orderGroup);
 
+        List<Long> productIdList = addOrderRequestList.stream()
+                .map(AddOrderRequestDto::getProductId)
+                .toList();
+
+        List<ProductView> productList = productViewRepository.findByProductIdIn(productIdList);
+
+        List<Order> orderList = OrderEntityUtil.insertOrders(addOrderRequestList, orderGroup, productList);
+        orderRepository.saveAll(orderList);
+
+        List<Long> optionDetailIdList = addOrderRequestList.stream()
+                .flatMap(requests -> requests.getOptions().stream())
+                .map(IdxRequestDto::getIdx)
+                .toList();
+        List<OptionView> optionList = optionViewRepository.findByOptionDetailIdIn(optionDetailIdList);
+
+        List<OrderOption> allOrderOptions = OrderEntityUtil.insertOrderOptions(addOrderRequestList, orderList, productList, optionList);
+        orderOptionRepository.saveAll(allOrderOptions);
+
+        List<OrderPrice> orderPriceList = OrderEntityUtil.insertOrderPrices(addOrderRequestList, orderList, productList, allOrderOptions);
+        orderPriceRepository.saveAll(orderPriceList);
+
         return new IdxResponseDto(orderGroup.getPaymentId());
     }
+
 
 }

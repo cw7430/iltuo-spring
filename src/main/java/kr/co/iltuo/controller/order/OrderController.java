@@ -3,8 +3,7 @@ package kr.co.iltuo.controller.order;
 import jakarta.servlet.http.*;
 import kr.co.iltuo.dto.request.IdxRequestDto;
 import kr.co.iltuo.dto.request.order.*;
-import kr.co.iltuo.dto.response.PlainResponseDto;
-import kr.co.iltuo.dto.response.ResponseDto;
+import kr.co.iltuo.dto.response.*;
 import kr.co.iltuo.dto.response.order.*;
 import kr.co.iltuo.service.order.OrderService;
 import lombok.RequiredArgsConstructor;
@@ -37,6 +36,21 @@ public class OrderController {
     @PostMapping("/delete_carts_all")
     public ResponseDto<PlainResponseDto> deleteCartsAll(HttpServletRequest request) {
         return ResponseDto.success(orderService.deleteCartsAll(request));
+    }
+
+    @GetMapping("/order")
+    public ResponseDto<OrderGroupDataResponseDto> order(HttpServletRequest request, @ModelAttribute IdxRequestDto idxRequestDto) {
+        return ResponseDto.success(orderService.order(request, idxRequestDto));
+    }
+
+    @PostMapping("/add_order")
+    public ResponseDto<IdxResponseDto> addOrder(HttpServletRequest request, @RequestBody AddOrderRequestDto addOrderRequestDto) {
+        return ResponseDto.success(orderService.addOrder(request, addOrderRequestDto));
+    }
+
+    @PostMapping("/add_orders")
+    public ResponseDto<IdxResponseDto> addOrders(HttpServletRequest request, @RequestBody List<AddOrderRequestDto> addOrderRequestList) {
+        return ResponseDto.success(orderService.addOrders(request, addOrderRequestList));
     }
 
 }

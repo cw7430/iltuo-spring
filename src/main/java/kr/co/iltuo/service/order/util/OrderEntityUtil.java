@@ -1,5 +1,8 @@
 package kr.co.iltuo.service.order.util;
 
+import kr.co.iltuo.common.code.ResponseCode;
+import kr.co.iltuo.common.exception.CustomException;
+import kr.co.iltuo.dto.request.IdxRequestDto;
 import kr.co.iltuo.dto.request.order.*;
 import kr.co.iltuo.dto.response.order.*;
 import kr.co.iltuo.entity.auth.*;
@@ -76,6 +79,45 @@ public class OrderEntityUtil {
                 .toList();
     }
 
+    public static OrderGroupDataResponseDto makeOrderGroup(OrderGroup orders, List<OrderView> orderList, List<OrderOptionView> orderOptions) {
+        return OrderGroupDataResponseDto.builder()
+                .paymentId(orders.getPaymentId())
+                .userIdx(orders.getUserIdx())
+                .orderDate(orders.getOrderDate())
+                .ordered(orders.isOrdered())
+                .orders(
+                        orderList.stream().map(order -> {
+                            List<OrderOptionDataResponseDto> matchedOptions = orderOptions.stream()
+                                    .filter(opt -> Objects.equals(opt.getOrderId(), order.getOrderId()))
+                                    .map(opt -> OrderOptionDataResponseDto.builder()
+                                            .orderId(opt.getOrderId())
+                                            .priorityIndex(opt.getPriorityIndex())
+                                            .optionName(opt.getOptionName())
+                                            .optionDetailName(opt.getOptionDetailName())
+                                            .optionFluctuatingPrice(opt.getOptionFluctuatingPrice())
+                                            .build())
+                                    .toList();
+
+                            return OrderDataResponseDto.builder()
+                                    .orderId(order.getOrderId())
+                                    .paymentId(order.getPaymentId())
+                                    .productName(order.getProductName())
+                                    .quantity(order.getQuantity())
+                                    .price(order.getPrice())
+                                    .orderOptions(matchedOptions)
+                                    .build();
+                        }).toList()
+                )
+                .build();
+    }
+
+//    public static List<OrderGroupDataResponseDto> makeOrderGroupList(List<OrderGroup> orderGroups, List<OrderView> orders) {
+//        return orderGroups.stream().map(group -> {
+//            List<OrderDataResponseDto> matchOrders = orders.stream()
+//                    .filter(order -> Objects.equals(order.getPaymentId(), group.getPaymentId()))
+//        })
+//    }
+
     public static OrderGroup insertOrderGroup(User user) {
         return OrderGroup.builder()
                 .userIdx(user.getUserIdx())
@@ -83,7 +125,7 @@ public class OrderEntityUtil {
                 .build();
     }
 
-    public static Order insertOrder(AddOrderRequestDto addOrderRequestDto, OrderGroup orderGroup, Product product) {
+    public static Order insertOrder(AddOrderRequestDto addOrderRequestDto, OrderGroup orderGroup, ProductView product) {
         return Order.builder()
                 .paymentId(orderGroup.getPaymentId())
                 .productName(product.getProductName())
@@ -91,13 +133,25 @@ public class OrderEntityUtil {
                 .build();
     }
 
-    private static long getOrderPrice(AddOrderRequestDto addOrderRequestDto, Product product) {
+    public static List<Order> insertOrders(List<AddOrderRequestDto> addOrderRequestList, OrderGroup orderGroup, List<ProductView> productList) {
+        return addOrderRequestList.stream()
+                .map(requestList -> {
+                    ProductView matchedProduct = productList.stream()
+                            .filter(p -> p.getProductId().equals(requestList.getProductId()))
+                            .findFirst()
+                            .orElseThrow(() -> new CustomException(ResponseCode.CONFLICT));
+
+                    return insertOrder(requestList, orderGroup, matchedProduct);
+                }).toList();
+    }
+
+    private static long getOrderPrice(AddOrderRequestDto addOrderRequestDto, ProductView product) {
         return (CalculateUtil.calculateDiscountPrice(
                 product.getPrice(), product.getDiscountedRate()
         )) * addOrderRequestDto.getQuantity();
     }
 
-    public static OrderPrice insertOrderPrice(AddOrderRequestDto addOrderRequestDto, Order order, Product product, List<OrderOption> orderOptions) {
+    public static OrderPrice insertOrderPrice(AddOrderRequestDto addOrderRequestDto, Order order, ProductView product, List<OrderOption> orderOptions) {
         long price = getOrderPrice(addOrderRequestDto, product);
 
         if (!orderOptions.isEmpty()) {
@@ -113,7 +167,27 @@ public class OrderEntityUtil {
                 .build();
     }
 
-    public static List<OrderOption> insertOrderOption(AddOrderRequestDto addOrderRequestDto, Order order, Product product, List<OptionView> options) {
+    public static List<OrderPrice> insertOrderPrices(List<AddOrderRequestDto> addOrderRequestList, List<Order> orderList, List<ProductView> productList, List<OrderOption> orderOptions) {
+        List<OrderPrice> orderPriceList = new ArrayList<>();
+        for (int i = 0; i < addOrderRequestList.size(); i++) {
+            AddOrderRequestDto request = addOrderRequestList.get(i);
+            Order order = orderList.get(i);
+            ProductView product = productList.stream()
+                    .filter(p -> p.getProductId().equals(request.getProductId()))
+                    .findFirst()
+                    .orElseThrow(() -> new CustomException(ResponseCode.CONFLICT));
+
+            List<OrderOption> matchedOrderOptions = orderOptions.stream()
+                    .filter(opt -> opt.getOrderId().equals(order.getOrderId()))
+                    .toList();
+
+            OrderPrice orderPrice = insertOrderPrice(request, order, product, matchedOrderOptions);
+            orderPriceList.add(orderPrice);
+        }
+        return orderPriceList;
+    }
+
+    public static List<OrderOption> insertOrderOption(AddOrderRequestDto addOrderRequestDto, Order order, ProductView product, List<OptionView> options) {
         long basePrice = getOrderPrice(addOrderRequestDto, product);
         AtomicLong currentPrice = new AtomicLong(basePrice);
 
@@ -129,12 +203,36 @@ public class OrderEntityUtil {
 
                     return OrderOption.builder()
                             .orderId(order.getOrderId())
+                            .priorityIndex(option.getPriorityIndex())
                             .optionName(option.getOptionName())
                             .optionDetailName(option.getOptionDetailName())
                             .optionFluctuatingPrice(fluctuatingPrice)
                             .build();
                 })
                 .toList();
+    }
+
+    public static List<OrderOption> insertOrderOptions(List<AddOrderRequestDto> addOrderRequestList, List<Order> orderList, List<ProductView> productList, List<OptionView> options) {
+        List<OrderOption> allOrderOptions = new ArrayList<>();
+        for (int i = 0; i < addOrderRequestList.size(); i++) {
+            AddOrderRequestDto request = addOrderRequestList.get(i);
+            Order order = orderList.get(i);
+            ProductView product = productList.stream()
+                    .filter(p -> Objects.equals(p.getProductId(), request.getProductId()))
+                    .findFirst()
+                    .orElseThrow(() -> new CustomException(ResponseCode.CONFLICT));
+            List<OptionView> matchedOptions = options.stream()
+                    .filter(opt -> request.getOptions().stream()
+                            .map(IdxRequestDto::getIdx)
+                            .toList()
+                            .contains(opt.getOptionDetailId()))
+                    .toList();
+
+            List<OrderOption> orderOptions = insertOrderOption(request, order, product, matchedOptions);
+            allOrderOptions.addAll(orderOptions);
+
+        }
+        return allOrderOptions;
     }
 
 

@@ -18,6 +18,9 @@ public class OrderOption {
     @Column(name = "`order_id`", nullable = false)
     private Long orderId;
 
+    @Column(name = "`priority_index`", nullable = false)
+    private Long priorityIndex;
+
     @Column(name = "`option_name`", nullable = false, length = 45)
     private String optionName;
 

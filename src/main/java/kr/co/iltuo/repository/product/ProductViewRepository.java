@@ -11,4 +11,5 @@ public interface ProductViewRepository extends JpaRepository<ProductView, Long> 
 
     List<ProductView> findByRecommendedTrue();
     List<ProductView> findByMajorCategoryId(Long majorCategoryId);
+    List<ProductView> findByProductIdIn(List<Long> productIds);
 }

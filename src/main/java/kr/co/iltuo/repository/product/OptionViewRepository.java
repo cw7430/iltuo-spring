@@ -10,5 +10,5 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public interface OptionViewRepository extends JpaRepository<OptionView, Long> {
     List<OptionView> findByMajorCategoryId(Long majorCategoryId);
-    List<OptionView> findByOptionDetailIdIn(List<IdxRequestDto> optionDetailIds);
+    List<OptionView> findByOptionDetailIdIn(List<Long> optionDetailIds);
 }
