@@ -9,6 +9,7 @@ import lombok.Getter;
 @Builder
 public class CartOptionDataResponseDto {
     private Long cartId;
+    private Long optionDetailId;
     private Long priorityIndex;
     private String optionName;
     private String optionDetailName;

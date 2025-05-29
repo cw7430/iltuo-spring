@@ -22,6 +22,9 @@ public class Order {
     @Column(name = "`product_name`", nullable = false, length = 100)
     private String productName;
 
+    @Column(name = "`product_code`", nullable = false, length = 65)
+    private String productCode;
+
     @Column(name = "`quantity`", nullable = false)
     private int quantity;
 }

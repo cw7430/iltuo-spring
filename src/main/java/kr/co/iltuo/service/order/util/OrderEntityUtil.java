@@ -12,10 +12,7 @@ import kr.co.iltuo.entity.product.ProductView;
 import kr.co.iltuo.service.global.util.CalculateUtil;
 
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class OrderEntityUtil {
@@ -43,6 +40,7 @@ public class OrderEntityUtil {
 
                         options.add(CartOptionDataResponseDto.builder()
                                 .cartId(option.getCartId())
+                                .optionDetailId(option.getOptionDetailId())
                                 .priorityIndex(option.getPriorityIndex())
                                 .optionName(option.getOptionName())
                                 .optionDetailName(option.getOptionDetailName())
@@ -91,21 +89,24 @@ public class OrderEntityUtil {
                 .ordered(orders.isOrdered())
                 .orders(
                         orderList.stream().map(order -> {
-                            List<OrderOptionDataResponseDto> matchedOptions = orderOptions.stream()
-                                    .filter(opt -> Objects.equals(opt.getOrderId(), order.getOrderId()))
-                                    .map(opt -> OrderOptionDataResponseDto.builder()
-                                            .orderId(opt.getOrderId())
-                                            .priorityIndex(opt.getPriorityIndex())
-                                            .optionName(opt.getOptionName())
-                                            .optionDetailName(opt.getOptionDetailName())
-                                            .optionFluctuatingPrice(opt.getOptionFluctuatingPrice())
-                                            .build())
-                                    .toList();
-
+                            List<OrderOptionDataResponseDto> matchedOptions = Collections.emptyList();
+                            if (!orderOptions.isEmpty()) {
+                                matchedOptions = orderOptions.stream()
+                                        .filter(opt -> Objects.equals(opt.getOrderId(), order.getOrderId()))
+                                        .map(opt -> OrderOptionDataResponseDto.builder()
+                                                .orderId(opt.getOrderId())
+                                                .priorityIndex(opt.getPriorityIndex())
+                                                .optionName(opt.getOptionName())
+                                                .optionDetailName(opt.getOptionDetailName())
+                                                .optionFluctuatingPrice(opt.getOptionFluctuatingPrice())
+                                                .build())
+                                        .toList();
+                            }
                             return OrderDataResponseDto.builder()
                                     .orderId(order.getOrderId())
                                     .paymentId(order.getPaymentId())
                                     .productName(order.getProductName())
+                                    .productCode(order.getProductCode())
                                     .quantity(order.getQuantity())
                                     .price(order.getPrice())
                                     .orderOptions(matchedOptions)
@@ -115,12 +116,29 @@ public class OrderEntityUtil {
                 .build();
     }
 
-//    public static List<OrderGroupDataResponseDto> makeOrderGroupList(List<OrderGroup> orderGroups, List<OrderView> orders) {
-//        return orderGroups.stream().map(group -> {
-//            List<OrderDataResponseDto> matchOrders = orders.stream()
-//                    .filter(order -> Objects.equals(order.getPaymentId(), group.getPaymentId()))
-//        })
-//    }
+    public static List<OrderGroupDataResponseDto> makeOrderGroupList(List<OrderGroup> orderGroups, List<OrderView> orders) {
+        return orderGroups.stream().map(group -> {
+            List<OrderDataResponseDto> matchOrders = orders.stream()
+                    .filter(order -> Objects.equals(order.getPaymentId(), group.getPaymentId()))
+                    .map(order -> OrderDataResponseDto.builder()
+                            .orderId(order.getOrderId())
+                            .paymentId(order.getPaymentId())
+                            .productName(order.getProductName())
+                            .productCode(order.getProductCode())
+                            .quantity(order.getQuantity())
+                            .price(order.getPrice())
+                            .orderOptions(Collections.emptyList())
+                            .build()).toList();
+
+            return OrderGroupDataResponseDto.builder()
+                    .paymentId(group.getPaymentId())
+                    .userIdx(group.getUserIdx())
+                    .orderDate(group.getOrderDate())
+                    .ordered(group.isOrdered())
+                    .orders(matchOrders)
+                    .build();
+        }).toList();
+    }
 
     public static OrderGroup insertOrderGroup(User user) {
         return OrderGroup.builder()
@@ -133,6 +151,7 @@ public class OrderEntityUtil {
         return Order.builder()
                 .paymentId(orderGroup.getPaymentId())
                 .productName(product.getProductName())
+                .productCode(product.getProductCode())
                 .quantity(addOrderRequestDto.getQuantity())
                 .build();
     }

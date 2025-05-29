@@ -4,7 +4,9 @@ import kr.co.iltuo.entity.order.OrderGroup;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface OrderGroupRepository extends JpaRepository<OrderGroup, Long> {
+    Optional<OrderGroup> findByProductIdAndUserIdx(Long productId, Long userIdx);
     List<OrderGroup> findByUserIdx(Long userIdx);
 }

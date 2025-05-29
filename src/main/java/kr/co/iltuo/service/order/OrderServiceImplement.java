@@ -114,13 +114,10 @@ public class OrderServiceImplement implements OrderService {
 
     @Override
     public OrderGroupDataResponseDto order(HttpServletRequest request, IdxRequestDto idxRequestDto) {
-        String token = jwtProvider.extractAccessTokenFromCookie(request);
-        if (!StringUtils.hasText(token) || !jwtProvider.validateAccessToken(token)) {
-            throw new CustomException(ResponseCode.UNAUTHORIZED);
-        }
+        User user = getUserByToken(request);
 
-        OrderGroup orders = orderGroupRepository.findById(idxRequestDto.getIdx())
-                .orElseThrow(() -> new CustomException(ResponseCode.RESOURCE_NOT_FOUND));
+        OrderGroup orders = orderGroupRepository.findByProductIdAndUserIdx(idxRequestDto.getIdx(), user.getUserIdx())
+                .orElseThrow(() -> new CustomException(ResponseCode.FORBIDDEN));
 
         List<OrderView> order = orderViewRepository.findByPaymentId(idxRequestDto.getIdx());
         if (order.isEmpty()) {
@@ -140,7 +137,7 @@ public class OrderServiceImplement implements OrderService {
 
         List<OrderView> orders = orderViewRepository.findByUserIdx(user.getUserIdx());
 
-        return List.of();
+        return OrderEntityUtil.makeOrderGroupList(orderGroups, orders);
     }
 
     @Override

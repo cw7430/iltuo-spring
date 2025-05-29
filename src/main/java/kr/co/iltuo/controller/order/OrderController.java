@@ -46,6 +46,11 @@ public class OrderController {
         return ResponseDto.success(orderService.order(request, idxRequestDto));
     }
 
+    @GetMapping("/order_list")
+    public ResponseDto<List<OrderGroupDataResponseDto>> orderGroup(HttpServletRequest request) {
+        return ResponseDto.success(orderService.orderGroup(request));
+    }
+
     @PostMapping("/add_order")
     public ResponseDto<IdxResponseDto> addOrder(HttpServletRequest request, @RequestBody AddOrderRequestDto addOrderRequestDto) {
         return ResponseDto.success(orderService.addOrder(request, addOrderRequestDto));
