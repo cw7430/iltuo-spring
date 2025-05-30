@@ -7,6 +7,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface OrderGroupRepository extends JpaRepository<OrderGroup, Long> {
-    Optional<OrderGroup> findByProductIdAndUserIdx(Long productId, Long userIdx);
-    List<OrderGroup> findByUserIdx(Long userIdx);
+    Optional<OrderGroup> findByPaymentIdAndUserIdxAndValidTrue(Long paymentId, Long userIdx);
+    List<OrderGroup> findByUserIdxAndValidTrue(Long userIdx);
 }

@@ -23,7 +23,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 import java.util.Collections;
 import java.util.List;
@@ -77,9 +76,10 @@ public class OrderServiceImplement implements OrderService {
     @Override
     @Transactional
     public PlainResponseDto deleteCart(HttpServletRequest request, IdxRequestDto idxRequestDto) {
-        String token = jwtProvider.extractAccessTokenFromCookie(request);
-        if (!StringUtils.hasText(token) || !jwtProvider.validateAccessToken(token)) {
-            throw new CustomException(ResponseCode.UNAUTHORIZED);
+        User user = getUserByToken(request);
+
+        if (!cartRepository.existsByCartIdAndUserIdx(idxRequestDto.getIdx(), user.getUserIdx())) {
+            throw new CustomException(ResponseCode.FORBIDDEN);
         }
 
         long optionDeleteCount = cartOptionRepository.deleteByCartId(idxRequestDto.getIdx());
@@ -116,7 +116,7 @@ public class OrderServiceImplement implements OrderService {
     public OrderGroupDataResponseDto order(HttpServletRequest request, IdxRequestDto idxRequestDto) {
         User user = getUserByToken(request);
 
-        OrderGroup orders = orderGroupRepository.findByProductIdAndUserIdx(idxRequestDto.getIdx(), user.getUserIdx())
+        OrderGroup orders = orderGroupRepository.findByPaymentIdAndUserIdxAndValidTrue(idxRequestDto.getIdx(), user.getUserIdx())
                 .orElseThrow(() -> new CustomException(ResponseCode.FORBIDDEN));
 
         List<OrderView> order = orderViewRepository.findByPaymentId(idxRequestDto.getIdx());
@@ -133,7 +133,7 @@ public class OrderServiceImplement implements OrderService {
     public List<OrderGroupDataResponseDto> orderGroup(HttpServletRequest request) {
         User user = getUserByToken(request);
 
-        List<OrderGroup> orderGroups = orderGroupRepository.findByUserIdx(user.getUserIdx());
+        List<OrderGroup> orderGroups = orderGroupRepository.findByUserIdxAndValidTrue(user.getUserIdx());
 
         List<OrderView> orders = orderViewRepository.findByUserIdx(user.getUserIdx());
 
@@ -203,6 +203,20 @@ public class OrderServiceImplement implements OrderService {
         orderPriceRepository.saveAll(orderPriceList);
 
         return new IdxResponseDto(orderGroup.getPaymentId());
+    }
+
+    @Override
+    public PlainResponseDto invalidateOrder(HttpServletRequest request, IdxRequestDto idxRequestDto) {
+        User user = getUserByToken(request);
+
+        OrderGroup orderGroup = orderGroupRepository.findByPaymentIdAndUserIdxAndValidTrue(idxRequestDto.getIdx(), user.getUserIdx())
+                .orElseThrow(() -> new CustomException(ResponseCode.FORBIDDEN));
+
+        orderGroup.updateOrderValid(false);
+
+        orderGroupRepository.save(orderGroup);
+
+        return new PlainResponseDto(true);
     }
 
 

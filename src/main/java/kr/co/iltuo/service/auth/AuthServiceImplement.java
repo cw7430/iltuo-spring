@@ -87,8 +87,7 @@ public class AuthServiceImplement implements AuthService {
 
     @Override
     public PlainResponseDto idDuplicateCheck(UserIdDuplicateCheckRequestDto userIdDuplicateCheckRequestDto) {
-        int count = userRepository.countByUserId(userIdDuplicateCheckRequestDto.getUserId());
-        if (count != 0) {
+        if (userRepository.existsByUserId(userIdDuplicateCheckRequestDto.getUserId())) {
             throw new CustomException(ResponseCode.DUPLICATE_RESOURCE);
         }
         return new PlainResponseDto(true);
@@ -98,8 +97,7 @@ public class AuthServiceImplement implements AuthService {
     @Transactional
     public SignInResponseDto signUpNative(HttpServletResponse response, NativeSignUpRequestDto nativeSignUpRequestDto) {
 
-        int count = userRepository.countByUserId(nativeSignUpRequestDto.getUserId());
-        if (count != 0) {
+        if (userRepository.existsByUserId(nativeSignUpRequestDto.getUserId())) {
             throw new CustomException(ResponseCode.DUPLICATE_RESOURCE);
         }
 
@@ -263,14 +261,14 @@ public class AuthServiceImplement implements AuthService {
     @Override
     @Transactional
     public PlainResponseDto invalidateAddresses(HttpServletRequest request, List<IdxRequestDto> idxRequests) {
-        String token = jwtProvider.extractAccessTokenFromCookie(request);
-        if (!StringUtils.hasText(token) || !jwtProvider.validateAccessToken(token)) {
-            throw new CustomException(ResponseCode.UNAUTHORIZED);
+        User user = getUserByToken(request);
+        if(idxRequests.isEmpty()) {
+            throw new CustomException(ResponseCode.VALIDATION_ERROR);
         }
         List<Long> idxList = idxRequests.stream()
                 .map(IdxRequestDto::getIdx)
                 .collect(Collectors.toList());
-        addressRepository.invalidateAddresses(idxList);
+        addressRepository.invalidateAddresses(idxList, user.getUserIdx());
         return new PlainResponseDto(true);
     }
 

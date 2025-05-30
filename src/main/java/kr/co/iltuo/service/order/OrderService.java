@@ -19,4 +19,5 @@ public interface OrderService {
     List<OrderGroupDataResponseDto> orderGroup(HttpServletRequest request);
     IdxResponseDto addOrder(HttpServletRequest request, AddOrderRequestDto addOrderRequestDto);
     IdxResponseDto addOrders(HttpServletRequest request, List<AddOrderRequestDto> addOrderRequestList);
+    PlainResponseDto invalidateOrder(HttpServletRequest request, IdxRequestDto idxRequestDto);
 }

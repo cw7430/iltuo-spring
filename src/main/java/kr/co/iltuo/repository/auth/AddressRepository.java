@@ -15,6 +15,6 @@ public interface AddressRepository extends JpaRepository<Address,Long> {
     List<Address> findByUserIdxAndValidTrue(Long userIdx, Sort sort);
 
     @Modifying
-    @Query(value = "UPDATE `address` SET `is_valid` = false, `is_main` = false WHERE `address_id` IN (:addressIds)", nativeQuery = true)
-    void invalidateAddresses(@Param("addressIds") List<Long> addressIds);
+    @Query(value = "UPDATE `address` SET `is_valid` = false, `is_main` = false WHERE `address_id` IN (:addressIds) AND `user_idx` = :userIdx", nativeQuery = true)
+    void invalidateAddresses(@Param("addressIds") List<Long> addressIds, @Param("userIdx") Long userIdx);
 }

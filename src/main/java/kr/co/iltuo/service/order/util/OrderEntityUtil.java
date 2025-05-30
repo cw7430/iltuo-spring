@@ -258,5 +258,27 @@ public class OrderEntityUtil {
         return allOrderOptions;
     }
 
+//    public static Payment insertPaymentInfo(OrderGroup orderGroup, List<OrderPrice> orderPriceList) {
+//        long totalPrice = orderPriceList.stream()
+//                .mapToLong(OrderPrice::getPrice)
+//                .sum();
+//
+//        long deliveryPrice;
+//
+//        if (totalPrice >= 50000) {
+//            deliveryPrice = 0;
+//        } else if (totalPrice >= 47000) {
+//            deliveryPrice = 50000 - totalPrice;
+//        } else {
+//            deliveryPrice = 3000;
+//        }
+//
+//        return Payment.builder()
+//                .paymentId(orderGroup.getPaymentId())
+//                .totalPrice(totalPrice)
+//                .deliveryPrice(deliveryPrice)
+//                .build();
+//    }
+
 
 }

@@ -61,4 +61,8 @@ public class OrderController {
         return ResponseDto.success(orderService.addOrders(request, addOrderRequestList));
     }
 
+    @PostMapping("/delete_order")
+    public ResponseDto<PlainResponseDto> invalidateOrder(HttpServletRequest request, @RequestBody IdxRequestDto idxRequestDto) {
+        return ResponseDto.success(orderService.invalidateOrder(request, idxRequestDto));
+    }
 }
