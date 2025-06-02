@@ -1,8 +1,10 @@
 package kr.co.iltuo.controller.order;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import kr.co.iltuo.dto.request.IdxRequestDto;
 import kr.co.iltuo.dto.request.order.AddOrderRequestDto;
+import kr.co.iltuo.dto.request.order.AddPaymentRequestDto;
 import kr.co.iltuo.dto.response.IdxResponseDto;
 import kr.co.iltuo.dto.response.PlainResponseDto;
 import kr.co.iltuo.dto.response.ResponseDto;
@@ -27,7 +29,7 @@ public class OrderController {
     }
 
     @PostMapping("/add_cart")
-    public ResponseDto<PlainResponseDto> addCart(HttpServletRequest request, @RequestBody AddOrderRequestDto addOrderRequestDto) {
+    public ResponseDto<PlainResponseDto> addCart(HttpServletRequest request, @Valid @RequestBody AddOrderRequestDto addOrderRequestDto) {
         return ResponseDto.success(orderService.addCart(request, addOrderRequestDto));
     }
 
@@ -52,7 +54,7 @@ public class OrderController {
     }
 
     @PostMapping("/add_order")
-    public ResponseDto<IdxResponseDto> addOrder(HttpServletRequest request, @RequestBody AddOrderRequestDto addOrderRequestDto) {
+    public ResponseDto<IdxResponseDto> addOrder(HttpServletRequest request, @Valid @RequestBody AddOrderRequestDto addOrderRequestDto) {
         return ResponseDto.success(orderService.addOrder(request, addOrderRequestDto));
     }
 
@@ -64,5 +66,10 @@ public class OrderController {
     @PostMapping("/delete_order")
     public ResponseDto<PlainResponseDto> invalidateOrder(HttpServletRequest request, @RequestBody IdxRequestDto idxRequestDto) {
         return ResponseDto.success(orderService.invalidateOrder(request, idxRequestDto));
+    }
+
+    @PostMapping("/add_payment")
+    public ResponseDto<PlainResponseDto> addPayment(HttpServletRequest request, @Valid @RequestBody AddPaymentRequestDto addPaymentRequestDto) {
+        return ResponseDto.success(orderService.addPayment(request, addPaymentRequestDto));
     }
 }

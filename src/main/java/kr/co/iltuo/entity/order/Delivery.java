@@ -20,10 +20,6 @@ public class Delivery {
     @Column(name = "`payment_id`", nullable = false)
     private Long paymentId;
 
-    @Builder.Default
-    @Column(name = "`delivery_status_code`", nullable = false, length = 6)
-    private String deliveryStatusCode = "DS001";
-
     @Column(name = "`postal_code`", nullable = false, length = 7)
     private String postalCode;
 

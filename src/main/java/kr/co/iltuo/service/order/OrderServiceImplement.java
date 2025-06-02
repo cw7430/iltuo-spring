@@ -5,6 +5,7 @@ import kr.co.iltuo.common.code.ResponseCode;
 import kr.co.iltuo.common.exception.CustomException;
 import kr.co.iltuo.dto.request.IdxRequestDto;
 import kr.co.iltuo.dto.request.order.AddOrderRequestDto;
+import kr.co.iltuo.dto.request.order.AddPaymentRequestDto;
 import kr.co.iltuo.dto.response.IdxResponseDto;
 import kr.co.iltuo.dto.response.PlainResponseDto;
 import kr.co.iltuo.dto.response.order.CartDataResponseDto;
@@ -41,6 +42,8 @@ public class OrderServiceImplement implements OrderService {
     private final OrderOptionRepository orderOptionRepository;
     private final OrderPriceRepository orderPriceRepository;
     private final CartOptionRepository cartOptionRepository;
+    private final PaymentRepository paymentRepository;
+    private final DeliveryRepository deliveryRepository;
     private final CartViewRepository cartViewRepository;
     private final CartOptionViewRepository cartOptionViewRepository;
     private final OrderViewRepository orderViewRepository;
@@ -206,6 +209,7 @@ public class OrderServiceImplement implements OrderService {
     }
 
     @Override
+    @Transactional
     public PlainResponseDto invalidateOrder(HttpServletRequest request, IdxRequestDto idxRequestDto) {
         User user = getUserByToken(request);
 
@@ -215,6 +219,39 @@ public class OrderServiceImplement implements OrderService {
         orderGroup.updateOrderValid(false);
 
         orderGroupRepository.save(orderGroup);
+
+        return new PlainResponseDto(true);
+    }
+
+    @Override
+    @Transactional
+    public PlainResponseDto addPayment(HttpServletRequest request, AddPaymentRequestDto addPaymentRequestDto) {
+        User user = getUserByToken(request);
+
+        boolean existed = paymentRepository.existsByPaymentId(addPaymentRequestDto.getPaymentId());
+        if (existed) {
+            throw new CustomException(ResponseCode.FORBIDDEN);
+        }
+
+        OrderGroup orderGroup = orderGroupRepository.findByPaymentIdAndUserIdxAndValidTrue(addPaymentRequestDto.getPaymentId(), user.getUserIdx())
+                .orElseThrow(() -> new CustomException(ResponseCode.FORBIDDEN));
+
+        List<Long> orderIds = addPaymentRequestDto.getOrderIds().stream()
+                .map(IdxRequestDto::getIdx)
+                .toList();
+
+        List<OrderPrice> orderPriceList = orderPriceRepository.findByOrderIdIn(orderIds);
+
+        if (orderPriceList.isEmpty()) {
+            throw new CustomException(ResponseCode.RESOURCE_NOT_FOUND);
+        }
+
+        Payment payment = OrderEntityUtil.insertPayment(addPaymentRequestDto, orderGroup, orderPriceList);
+        paymentRepository.save(payment);
+        orderGroupRepository.save(orderGroup);
+
+        Delivery delivery = OrderEntityUtil.insertDelivery(addPaymentRequestDto);
+        deliveryRepository.save(delivery);
 
         return new PlainResponseDto(true);
     }

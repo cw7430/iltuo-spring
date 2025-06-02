@@ -4,6 +4,7 @@ import kr.co.iltuo.common.code.ResponseCode;
 import kr.co.iltuo.common.exception.CustomException;
 import kr.co.iltuo.dto.request.IdxRequestDto;
 import kr.co.iltuo.dto.request.order.AddOrderRequestDto;
+import kr.co.iltuo.dto.request.order.AddPaymentRequestDto;
 import kr.co.iltuo.dto.response.order.*;
 import kr.co.iltuo.entity.auth.User;
 import kr.co.iltuo.entity.order.*;
@@ -86,7 +87,7 @@ public class OrderEntityUtil {
                 .paymentId(orders.getPaymentId())
                 .userIdx(orders.getUserIdx())
                 .orderDate(orders.getOrderDate())
-                .ordered(orders.isOrdered())
+                .orderStatusCode(orders.getOrderStatusCode())
                 .orders(
                         orderList.stream().map(order -> {
                             List<OrderOptionDataResponseDto> matchedOptions = Collections.emptyList();
@@ -134,7 +135,7 @@ public class OrderEntityUtil {
                     .paymentId(group.getPaymentId())
                     .userIdx(group.getUserIdx())
                     .orderDate(group.getOrderDate())
-                    .ordered(group.isOrdered())
+                    .orderStatusCode(group.getOrderStatusCode())
                     .orders(matchOrders)
                     .build();
         }).toList();
@@ -258,27 +259,56 @@ public class OrderEntityUtil {
         return allOrderOptions;
     }
 
-//    public static Payment insertPaymentInfo(OrderGroup orderGroup, List<OrderPrice> orderPriceList) {
-//        long totalPrice = orderPriceList.stream()
-//                .mapToLong(OrderPrice::getPrice)
-//                .sum();
-//
-//        long deliveryPrice;
-//
-//        if (totalPrice >= 50000) {
-//            deliveryPrice = 0;
-//        } else if (totalPrice >= 47000) {
-//            deliveryPrice = 50000 - totalPrice;
-//        } else {
-//            deliveryPrice = 3000;
-//        }
-//
-//        return Payment.builder()
-//                .paymentId(orderGroup.getPaymentId())
-//                .totalPrice(totalPrice)
-//                .deliveryPrice(deliveryPrice)
-//                .build();
-//    }
+    private static long getTotalPrice(List<OrderPrice> orderPriceList) {
+        return orderPriceList.stream()
+                .mapToLong(OrderPrice::getPrice)
+                .sum();
+    }
+
+    private static long getDeliveryPrice(long totalPrice) {
+        long deliveryPrice;
+
+        if (totalPrice >= 50000) {
+            deliveryPrice = 0;
+        } else if (totalPrice >= 47000) {
+            deliveryPrice = 50000 - totalPrice;
+        } else {
+            deliveryPrice = 3000;
+        }
+        return deliveryPrice;
+    }
+
+
+    public static Payment insertPayment(AddPaymentRequestDto addPaymentRequestDto, OrderGroup orderGroup, List<OrderPrice> orderPriceList) {
+
+        String paymentMethodCode = addPaymentRequestDto.getPaymentMethodCode();
+        boolean isCard = "PM001".equals(paymentMethodCode);
+
+        long totalPrice = getTotalPrice(orderPriceList);
+        long deliveryPrice = getDeliveryPrice(totalPrice);
+        String orderStatusCode = isCard ? "OS003" : "OS002";
+        Instant paymentDate = isCard ? Instant.now() : null;
+
+        orderGroup.updateOrderStatus(orderStatusCode);
+
+        return Payment.builder()
+                .paymentId(addPaymentRequestDto.getPaymentId())
+                .paymentMethodCode(addPaymentRequestDto.getPaymentMethodCode())
+                .totalPrice(totalPrice)
+                .deliveryPrice(deliveryPrice)
+                .paymentDate(paymentDate)
+                .build();
+    }
+
+    public static Delivery insertDelivery(AddPaymentRequestDto addPaymentRequestDto) {
+        return Delivery.builder()
+                .paymentId(addPaymentRequestDto.getPaymentId())
+                .postalCode(addPaymentRequestDto.getPostalCode())
+                .defaultAddress(addPaymentRequestDto.getDefaultAddress())
+                .detailAddress(addPaymentRequestDto.getDetailAddress())
+                .extraAddress(addPaymentRequestDto.getExtraAddress())
+                .build();
+    }
 
 
 }

@@ -14,6 +14,6 @@ public class OrderGroupDataResponseDto {
     private Long paymentId;
     private Long userIdx;
     private Instant orderDate;
-    private boolean ordered;
+    private String orderStatusCode;
     private List<OrderDataResponseDto> orders;
 }

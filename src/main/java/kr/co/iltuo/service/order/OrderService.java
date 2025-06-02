@@ -3,6 +3,7 @@ package kr.co.iltuo.service.order;
 import jakarta.servlet.http.HttpServletRequest;
 import kr.co.iltuo.dto.request.IdxRequestDto;
 import kr.co.iltuo.dto.request.order.AddOrderRequestDto;
+import kr.co.iltuo.dto.request.order.AddPaymentRequestDto;
 import kr.co.iltuo.dto.response.IdxResponseDto;
 import kr.co.iltuo.dto.response.PlainResponseDto;
 import kr.co.iltuo.dto.response.order.CartDataResponseDto;
@@ -20,4 +21,5 @@ public interface OrderService {
     IdxResponseDto addOrder(HttpServletRequest request, AddOrderRequestDto addOrderRequestDto);
     IdxResponseDto addOrders(HttpServletRequest request, List<AddOrderRequestDto> addOrderRequestList);
     PlainResponseDto invalidateOrder(HttpServletRequest request, IdxRequestDto idxRequestDto);
+    PlainResponseDto addPayment(HttpServletRequest request, AddPaymentRequestDto addPaymentRequestDto);
 }

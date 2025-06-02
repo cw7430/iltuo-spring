@@ -20,10 +20,6 @@ public class Payment {
     @Column(name = "`payment_id`", nullable = false)
     private Long paymentId;
 
-    @Builder.Default
-    @Column(name = "`payment_status_code`", nullable = false, length = 6)
-    private String paymentStatusCode = "PS001";
-
     @Column(name = "`payment_method_code`", length = 6, nullable = false)
     private String paymentMethodCode;
 

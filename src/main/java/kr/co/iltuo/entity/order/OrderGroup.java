@@ -25,19 +25,20 @@ public class OrderGroup {
     private Instant orderDate;
 
     @Builder.Default
-    @Column(name = "`is_ordered`", nullable = false)
-    private boolean ordered = false;
+    @Column(name = "`order_status_code`", nullable = false)
+    private String orderStatusCode = "OS001";
 
     @Builder.Default
     @Column(name = "`is_valid`", nullable = false)
     private boolean valid = true;
 
-    public void updateOrder(boolean ordered) {
-        this.ordered = ordered;
-    }
 
     public void updateOrderValid(boolean valid) {
         this.valid = valid;
+    }
+
+    public void updateOrderStatus(String orderStatusCode) {
+        this.orderStatusCode = orderStatusCode;
     }
 
 }
