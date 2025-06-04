@@ -8,6 +8,7 @@ import kr.co.iltuo.dto.response.IdxResponseDto;
 import kr.co.iltuo.dto.response.PlainResponseDto;
 import kr.co.iltuo.dto.response.order.CartDataResponseDto;
 import kr.co.iltuo.dto.response.order.OrderGroupDataResponseDto;
+import kr.co.iltuo.entity.order.PaymentView;
 
 import java.util.List;
 
@@ -22,4 +23,5 @@ public interface OrderService {
     IdxResponseDto addOrders(HttpServletRequest request, List<AddOrderRequestDto> addOrderRequestList);
     PlainResponseDto invalidateOrder(HttpServletRequest request, IdxRequestDto idxRequestDto);
     PlainResponseDto addPayment(HttpServletRequest request, AddPaymentRequestDto addPaymentRequestDto);
+    PaymentView payment(HttpServletRequest request, IdxRequestDto idxRequestDto);
 }

@@ -22,6 +22,7 @@ import kr.co.iltuo.security.jwt.JwtProvider;
 import kr.co.iltuo.service.order.util.OrderEntityUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -48,6 +49,7 @@ public class OrderServiceImplement implements OrderService {
     private final CartOptionViewRepository cartOptionViewRepository;
     private final OrderViewRepository orderViewRepository;
     private final OrderOptionViewRepository orderOptionViewRepository;
+    private final PaymentViewRepository paymentViewRepository;
     private final JwtProvider jwtProvider;
 
     private User getUserByToken(HttpServletRequest request) {
@@ -135,8 +137,8 @@ public class OrderServiceImplement implements OrderService {
     @Override
     public List<OrderGroupDataResponseDto> orderGroup(HttpServletRequest request) {
         User user = getUserByToken(request);
-
-        List<OrderGroup> orderGroups = orderGroupRepository.findByUserIdxAndValidTrue(user.getUserIdx());
+        Sort orderDateDesc = Sort.by(Sort.Direction.DESC, "orderDate");
+        List<OrderGroup> orderGroups = orderGroupRepository.findByUserIdxAndValidTrue(user.getUserIdx(), orderDateDesc);
 
         List<OrderView> orders = orderViewRepository.findByUserIdx(user.getUserIdx());
 
@@ -256,5 +258,11 @@ public class OrderServiceImplement implements OrderService {
         return new PlainResponseDto(true);
     }
 
+    @Override
+    public PaymentView payment(HttpServletRequest request, IdxRequestDto idxRequestDto) {
+        User user = getUserByToken(request);
+        return paymentViewRepository.findByPaymentIdAndUserIdx(idxRequestDto.getIdx(), user.getUserIdx())
+                .orElseThrow(() -> new CustomException(ResponseCode.RESOURCE_NOT_FOUND));
+    }
 
 }

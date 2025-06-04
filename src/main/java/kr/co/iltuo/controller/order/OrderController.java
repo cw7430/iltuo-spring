@@ -10,6 +10,7 @@ import kr.co.iltuo.dto.response.PlainResponseDto;
 import kr.co.iltuo.dto.response.ResponseDto;
 import kr.co.iltuo.dto.response.order.CartDataResponseDto;
 import kr.co.iltuo.dto.response.order.OrderGroupDataResponseDto;
+import kr.co.iltuo.entity.order.PaymentView;
 import kr.co.iltuo.service.order.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -71,5 +72,10 @@ public class OrderController {
     @PostMapping("/add_payment")
     public ResponseDto<PlainResponseDto> addPayment(HttpServletRequest request, @Valid @RequestBody AddPaymentRequestDto addPaymentRequestDto) {
         return ResponseDto.success(orderService.addPayment(request, addPaymentRequestDto));
+    }
+
+    @GetMapping("/payment")
+    public ResponseDto<PaymentView> payment(HttpServletRequest request, IdxRequestDto idxRequestDto) {
+        return ResponseDto.success(orderService.payment(request, idxRequestDto));
     }
 }
