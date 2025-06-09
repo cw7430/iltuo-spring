@@ -9,7 +9,7 @@ RUN chmod +x ./gradlew && ./gradlew build
 FROM openjdk:17-jdk-slim AS runtime
 WORKDIR /app
 
-COPY --from=build /app/build/libs/*.jar /app/app.jar
+COPY --from=build /app/build/libs/*.jar /app/iltuo.jar
 
 EXPOSE 4000
-CMD ["java", "-jar", "/app/app.jar"]
+CMD ["java", "-jar", "/app/iltuo.jar"]
