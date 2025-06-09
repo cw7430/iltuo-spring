@@ -15,8 +15,6 @@ spring:
         jdbc:
           batch_size: 30
           generate_statistics: true
-  jackson:
-    time-zone: Asia/Seoul
 logging:
   level:
     org.hibernate.orm.jdbc.bind: trace
